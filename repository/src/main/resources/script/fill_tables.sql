@@ -24,7 +24,7 @@ values ('Movie');
 insert into tag(name)
 values ('Shopping');
 insert into tag(name)
-values ('Cofee');
+values ('Coffee');
 insert into tag(name)
 values ('Sport');
 

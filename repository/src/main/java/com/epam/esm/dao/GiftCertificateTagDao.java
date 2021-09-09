@@ -4,15 +4,16 @@ import com.epam.esm.constant.SqlGiftCertificateTagQuery;
 import com.epam.esm.entities.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class GiftCertificateTagDao {
 
     private final JdbcTemplate jdbcTemplate;
+
 
     @Autowired
     public GiftCertificateTagDao(JdbcTemplate jdbcTemplate) {
@@ -27,7 +28,7 @@ public class GiftCertificateTagDao {
         jdbcTemplate.update(SqlGiftCertificateTagQuery.DISCONNECT_TAG_TO_CERTIFICATE,giftCertificateId,tagId);
     }
 
-    public void createConnections(long giftCertificateId, List <Tag> tags) {
+    public void createConnections(long giftCertificateId, Set<Tag> tags) {
         for (Tag tag : tags) {
             jdbcTemplate.update(SqlGiftCertificateTagQuery.MAKE_TIDED_TAGS_AND_CERTIFICATIONS,
                     giftCertificateId, tag.getName());
@@ -38,6 +39,7 @@ public class GiftCertificateTagDao {
         return jdbcTemplate.queryForList(SqlGiftCertificateTagQuery.SELECT_ALL_TAG_ID_BY_CERTIFICATE_ID,
                 Long.class,giftCertificateId);
     }
+
 
     public void deleteConnectionBetweenGiftCertificateAndTagsByGiftCertificateId(long giftCertificateId) {
         jdbcTemplate.update(SqlGiftCertificateTagQuery.MAKE_UNTIED_CERTIFICATE,giftCertificateId);

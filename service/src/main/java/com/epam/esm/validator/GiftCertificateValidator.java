@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Component
@@ -46,12 +47,12 @@ public class GiftCertificateValidator {
         return duration > 0;
     }
 
-    public boolean areGiftCertificateTagsValidForCreation(List<Tag> tags) {
+    public boolean areGiftCertificateTagsValidForCreation(Set<Tag> tags) {
         if (tags == null || tags.isEmpty()) {
             return true;
         }
         return tags.stream()
-                .allMatch(tag -> tagValidator.isNameValid(tag));
+                .allMatch(tagValidator::isNameValid);
     }
 
     public boolean areGiftCertificateTagsValid(List<Tag> tags) {
@@ -59,6 +60,6 @@ public class GiftCertificateValidator {
             return false;
         }
         return tags.stream()
-                .allMatch(tag -> tagValidator.isNameValid(tag));
+                .allMatch(tagValidator::isNameValid);
     }
 }

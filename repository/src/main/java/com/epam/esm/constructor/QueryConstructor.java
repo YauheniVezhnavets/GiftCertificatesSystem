@@ -8,13 +8,13 @@ public class QueryConstructor {
 
     private static final String SELECT_CERTIFICATES_WHERE_MATCH_TAG_NAME_FiRST_PART = "t.name IN ('";
     private static final String SELECT_CERTIFICATES_WHERE_MATCH_TAG_NAME_SECOND_PART = "') ";
-    private static final String SELECT_CERTIFICATES_WHERE_MATCH_NAME_FIRST_PART = "gc.name like %'";
+    private static final String SELECT_CERTIFICATES_WHERE_MATCH_NAME_FIRST_PART = "gc.name like '%";
     private static final String SELECT_CERTIFICATES_WHERE_MATCH_NAME_SECOND_PART = "%' ";
     private static final String WHERE = "WHERE ";
     private static final String AND = "AND ";
     private static final String ORDER_BY = "ORDER BY ";
     private static final String COMMA = ", ";
-    private static final String SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_FIRST_PART = "gc.description IN (' ";
+    private static final String SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_FIRST_PART = "gc.description IN ('";
     private static final String SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_SECOND_PART = "') ";
     private static final String SELECT_CERTIFICATES_BY_NAME = "gc.name ";
     private static final String SELECT_CERTIFICATES_BY_NAME_DESC = "gc.name DESC ";
@@ -70,7 +70,7 @@ public class QueryConstructor {
             if (sortByDate != null) {
                 if ("ASC".equals(sortByDate)) {
                     query.append(SELECT_CERTIFICATES_BY_DATE);
-                } else if ("DESC".equals(sortByName)) {
+                } else if ("DESC".equals(sortByDate)) {
                     query.append(SELECT_CERTIFICATES_BY_DATE_DESC);
                 }
             }

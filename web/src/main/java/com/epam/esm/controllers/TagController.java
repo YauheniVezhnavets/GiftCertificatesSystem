@@ -37,7 +37,7 @@ public class TagController {
      *
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of {@link Tag} tags.
      */
-    @GetMapping(produces = JSON)
+    @GetMapping (produces = JSON)
     public ResponseEntity<List<Tag>> getTags() {
         return new ResponseEntity<>(tagService.getTags(), HttpStatus.OK);
     }

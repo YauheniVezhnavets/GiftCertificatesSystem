@@ -52,8 +52,8 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
 
     @Override
     public Optional<GiftCertificate> findById(long id) {
-        return jdbcTemplate.query(SqlGiftCertificateQuery.FIND_CERTIFICATES_BY_ID, giftCertificateMapper)
-                .stream().findAny();
+        return jdbcTemplate.query(SqlGiftCertificateQuery.FIND_CERTIFICATES_BY_ID, giftCertificateMapper,
+                        new Object[]{id}).stream().findAny();
 
     }
 
@@ -70,8 +70,8 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
     }
 
     public void update(long id, GiftCertificate giftCertificate) {
-        jdbcTemplate.update(SqlGiftCertificateQuery.UPDATE_CERTIFICATE,giftCertificate.getName(),
+        jdbcTemplate.update(SqlGiftCertificateQuery.UPDATE_CERTIFICATE, giftCertificate.getName(),
                 giftCertificate.getDescription(), giftCertificate.getPrice(),giftCertificate.getDuration(),
-                giftCertificate.getLastUpdateDate(),id);
+                giftCertificate.getLastUpdateDate(), id);
     }
 }

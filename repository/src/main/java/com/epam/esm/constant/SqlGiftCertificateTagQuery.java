@@ -14,6 +14,7 @@ public class SqlGiftCertificateTagQuery {
     public static final String SELECT_ALL_TAG_ID_BY_CERTIFICATE_ID = "SELECT tag_id FROM gift_certificate_tag WHERE " +
             "gift_certificate_id = ?";
 
+
     public static final String MAKE_TIDED_TAGS_AND_CERTIFICATIONS = "INSERT INTO gift_certificate_tag " +
             "(gift_certificate_id, tag_id) VALUES (?, (SELECT id from tag WHERE name = ?))";
 

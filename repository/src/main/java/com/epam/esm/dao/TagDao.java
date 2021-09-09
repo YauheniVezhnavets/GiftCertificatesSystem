@@ -9,12 +9,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class TagDao implements EntityDao<Tag> {
@@ -52,7 +52,7 @@ public class TagDao implements EntityDao<Tag> {
         return jdbcTemplate.query(SqlTagQuery.FIND_TAG_BY_NAME,tagMapper,new Object[]{name}).stream().findAny();
     }
 
-    public List<Long> getAllTagsIdConnectedWithGiftCertificate(List <Tag> tags) {
+    public List<Long> getAllTagsIdConnectedWithGiftCertificate(Set<Tag> tags) {
         List<Long> listOfId = new ArrayList<>();
         tags.stream().forEach(tag -> listOfId.add(jdbcTemplate.queryForObject(SqlTagQuery.FIND_TAG_ID_BY_NAME,
                 Long.class, tag.getName())));
@@ -60,8 +60,14 @@ public class TagDao implements EntityDao<Tag> {
     }
 
 
-    public List<Tag> findAll() {
+    public List <Tag> findAll() {
         return jdbcTemplate.query(SqlTagQuery.FIND_ALL_TAGS, tagMapper);
+    }
+
+
+    public List <Tag> getAllTagsConnectedWithCertificateId (long giftCertificateId){
+        return jdbcTemplate.query(SqlTagQuery.SELECT_ALL_TAGS_BY_CERTIFICATE_ID, tagMapper,
+                giftCertificateId);
     }
 
 

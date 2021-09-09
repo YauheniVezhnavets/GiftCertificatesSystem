@@ -42,6 +42,7 @@ public class TagServiceImpl implements TagService<Tag> {
         throw new ResourceNotFoundException(id);
     }
 
+
     @Override
     public void createTag(Tag tag) throws InvalidFieldException, ResourceDuplicateException {
         if (!tagValidator.isNameValid(tag)) {

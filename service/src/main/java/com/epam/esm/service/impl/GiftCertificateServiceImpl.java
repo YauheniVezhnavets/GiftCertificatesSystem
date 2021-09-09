@@ -15,10 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCertificate> {
@@ -28,6 +27,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
     private final GiftCertificateTagDao giftCertificateTagDao;
     private final GiftCertificateValidator giftCertificateValidator;
     private final GiftCertificateDtoWrapper giftCertificateDtoWrapper;
+    private final String TIME_ZONE = "GMT+3";
+
 
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, TagDao tagDao,
@@ -47,6 +48,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
                                                         String sortByName, String sortByDate) {
         List<GiftCertificate> sortedGiftCertificates = giftCertificateDao.getGiftCertificates(tagName,
                 giftCertificateName, description, sortByName, sortByDate);
+
+        for (GiftCertificate giftCertificate : sortedGiftCertificates){
+            Set <Tag> tags = getTagsByGiftCertificateId(giftCertificate.getCertificateId());
+            giftCertificate.setTags(tags);
+        }
 
         List<GiftCertificateDto> sortedDtoGiftCertificates = new ArrayList<>();
 
@@ -73,8 +79,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
             throw new InvalidFieldException();
         }
 
-        giftCertificate.setCreateDate(ZonedDateTime.now());
-        giftCertificate.setLastUpdateDate(ZonedDateTime.now());
+        giftCertificate.setCreateDate(LocalDateTime.now(ZoneId.of(TIME_ZONE)));
+        giftCertificate.setLastUpdateDate(LocalDateTime.now(ZoneId.of(TIME_ZONE)));
 
         checkForTags(giftCertificate.getTags());
 
@@ -97,7 +103,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
             throw new InvalidFieldException();
         }
 
-        giftCertificate.setLastUpdateDate(ZonedDateTime.now());
+        giftCertificate.setLastUpdateDate(LocalDateTime.now(ZoneId.of(TIME_ZONE)));
 
         checkForTags(giftCertificate.getTags());
 
@@ -111,6 +117,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         giftCertificateDao.update(id, giftCertificate);
     }
 
+
     @Override
     @Transactional
     public void deleteGiftCertificate(long id) throws ResourceNotFoundException {
@@ -121,7 +128,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         giftCertificateDao.delete(id);
     }
 
-    private void checkForTags(List<Tag> newTags) {
+    public Set <Tag> getTagsByGiftCertificateId(long id) throws ResourceNotFoundException {
+        List <Tag> listOfTags = tagDao.getAllTagsConnectedWithCertificateId(id);
+        Set<Tag> setOfTags = new HashSet<>(listOfTags);
+        return setOfTags;
+    }
+
+    private void checkForTags(Set <Tag> newTags) {
         List<String> newTagNames = new ArrayList<>();
 
         newTags.stream().forEach(tag -> newTagNames.add(tag.getName()));

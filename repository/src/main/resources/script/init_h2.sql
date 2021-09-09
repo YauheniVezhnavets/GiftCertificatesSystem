@@ -1,27 +1,28 @@
-CREATE TABLE gift_certificates
+CREATE TABLE gift_certificate
 (
-    gift_certificate_id bigint         NOT NULL AUTO_INCREMENT,
-    certificate_name    varchar(256)   NOT NULL,
+    id bigserial,
+    name                varchar(256)   NOT NULL,
     description         text           NOT NULL,
     price               decimal(10, 0) NOT NULL,
     duration            int            NOT NULL,
-    create_date         datetime       NOT NULL,
-    last_update_date    datetime DEFAULT NULL,
-    PRIMARY KEY (gift_certificate_id)
+    create_date         datetime       DEFAULT NULL,
+    last_update_date    datetime       DEFAULT NULL,
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE tags
+CREATE TABLE tag
 (
-    tag_id   bigint       NOT NULL AUTO_INCREMENT,
-    tag_name varchar(256) NOT NULL,
-    PRIMARY KEY (tag_id)
+    id   bigserial,
+    name varchar(256) NOT NULL,
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE gift_certificates_tags
-(
-    gift_certificate_tag_id bigint NOT NULL AUTO_INCREMENT,
-    gift_certificate_id_fk  bigint NOT NULL REFERENCES gift_certificates (gift_certificate_id),
-    tag_id_fk               bigint NOT NULL REFERENCES tags (tag_id),
-    PRIMARY KEY (gift_certificate_tag_id)
+CREATE TABLE gift_certificate_tag(
+    id bigserial,
+	gift_certificate_id bigint NOT NULL,
+	tag_id bigint NOT NULL,
+	PRIMARY KEY (id),
+	CONSTRAINT fk_gift_certificte_id FOREIGN KEY (gift_certificate_id) references gift_certificate(id) on delete cascade,
+	CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) references tag(id)on delete cascade
 
 );

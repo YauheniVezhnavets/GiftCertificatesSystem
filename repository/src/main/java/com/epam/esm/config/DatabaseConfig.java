@@ -25,7 +25,7 @@ public class DatabaseConfig {
     private static final String DATABASE_POOL_INITIAL_SIZE = "spring.datasource.poolInitialSize";
     private static final String DATABASE_POOL_MAX_SIZE = "spring.datasource.poolMaxSize";
     private static final String CREATE_DATABASE_SCRIPT = "classpath:script/init_h2.sql";
-    private static final String FILL_DATABASE_WITH_DATA_SCRIPT = "classpath:script/fill_tables.sql";
+    private static final String FILL_DATABASE_WITH_DATA_SCRIPT = "classpath:script/fill_tables_h2.sql";
 
 
     @Profile("prod")

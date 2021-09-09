@@ -2,8 +2,8 @@ package com.epam.esm.entities;
 
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 public class GiftCertificate implements Identifiable {
 
@@ -12,22 +12,32 @@ public class GiftCertificate implements Identifiable {
     private String description;
     private BigDecimal price;
     private int duration;
-    private ZonedDateTime createDate;
-    private ZonedDateTime lastUpdateDate;
-    private List<Tag> tags;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
+    private Set<Tag> tags;
 
     public GiftCertificate() {
 
     }
 
-    public GiftCertificate(long certificateId, String name, ZonedDateTime createDate) {
+    public GiftCertificate(long certificateId, String name, LocalDateTime createDate) {
         this.certificateId = certificateId;
         this.name = name;
         this.createDate = createDate;
     }
 
+    public GiftCertificate(String name, String description, BigDecimal price, int duration,
+                           LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
     public GiftCertificate(long id,String name, String description, BigDecimal price, int duration,
-                           ZonedDateTime createDate, ZonedDateTime lastUpdateDate) {
+                           LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         this.certificateId =id;
         this.name = name;
         this.description = description;
@@ -77,28 +87,32 @@ public class GiftCertificate implements Identifiable {
         this.duration = duration;
     }
 
-    public ZonedDateTime getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(ZonedDateTime createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public ZonedDateTime getLastUpdateDate() {
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(ZonedDateTime lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public List<Tag> getTags() {
+    public Set <Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(Set <Tag> tags) {
         this.tags = tags;
+    }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
     }
 
     @Override

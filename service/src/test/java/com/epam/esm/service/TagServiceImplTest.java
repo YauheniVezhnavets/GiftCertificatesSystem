@@ -53,7 +53,7 @@ public class TagServiceImplTest {
     }
 
     @Test
-    public void methodShouldReturnTags() throws ResourceNotFoundException {
+    public void methodShouldReturnTag() throws ResourceNotFoundException {
 
         when(tagDao.findById(anyLong())).thenReturn(optionalTag);
 

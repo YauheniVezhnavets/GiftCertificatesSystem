@@ -8,17 +8,20 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class GiftCertificateDtoWrapper {
 
     public GiftCertificateDto wrap(GiftCertificate giftCertificate) {
-        List<String> listOfTagsName = new ArrayList<>();
+        List <String> listOfTagsName = new ArrayList<>();
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto(
                 giftCertificate.getCertificateId(), giftCertificate.getName(),
                 giftCertificate.getDescription(), giftCertificate.getPrice(), giftCertificate.getDuration(),
-                giftCertificate.getCreateDate().toString(), giftCertificate.getLastUpdateDate().toString());
+               giftCertificate.getCreateDate(),giftCertificate.getLastUpdateDate());
+
         for (Tag tag : giftCertificate.getTags()) {
             listOfTagsName.add(tag.getName());
         }
@@ -31,17 +34,14 @@ public class GiftCertificateDtoWrapper {
         GiftCertificate giftCertificate = new GiftCertificate(
                 giftCertificateDto.getId(), giftCertificateDto.getName(),
                 giftCertificateDto.getDescription(), giftCertificateDto.getPrice(), giftCertificateDto.getDuration(),
-                giftCertificateDto.getCreateDate() != null ? ZonedDateTime.parse(giftCertificateDto.getCreateDate())
-                        : null,
-                giftCertificateDto.getLastUpdateDate() != null ? ZonedDateTime.parse(giftCertificateDto.getLastUpdateDate())
-                        : null);
+                giftCertificateDto.getCreateDate(),giftCertificateDto.getLastUpdateDate());
 
-        List<Tag> listOfTags = new ArrayList<>();
+        Set<Tag> setOfTags = new HashSet<>();
 
         for (String tagName : giftCertificateDto.getTags()) {
-            listOfTags.add(new Tag(tagName));
+            setOfTags.add(new Tag(tagName));
         }
-        giftCertificate.setTags(listOfTags);
+        giftCertificate.setTags(setOfTags);
         return giftCertificate;
     }
 }

@@ -2,17 +2,19 @@ package com.epam.esm.mappers;
 
 import com.epam.esm.entities.GiftCertificate;
 import com.epam.esm.entities.Tag;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Component
-public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
+public class GiftCertificateMapper implements ResultSetExtractor <List<GiftCertificate>> {
 
     private static final String ID = "id";
     private static final String NAME = "name";
@@ -24,26 +26,33 @@ public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
     private static final String TAG_NAME = "tag_name";
     private static final String TAG_ID = "tag_id";
 
-
     @Override
-    public GiftCertificate mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        List<Tag> listOfTags = new ArrayList<>();
-        GiftCertificate giftCertificate = new GiftCertificate();
-        while (resultSet.next()) {
-            if (giftCertificate == null) {
-                giftCertificate.setCertificateId(resultSet.getLong(ID));
-                giftCertificate.setName(resultSet.getString(NAME));
-                giftCertificate.setDescription(resultSet.getString(DESCRIPTION));
-                giftCertificate.setPrice(resultSet.getBigDecimal(PRICE));
-                giftCertificate.setDuration(resultSet.getInt(DURATION));
-                giftCertificate.setCreateDate(ZonedDateTime.parse(resultSet.getString(CREATE_DATE)));
-                giftCertificate.setLastUpdateDate(ZonedDateTime.parse(resultSet.getString(LAST_UPDATE_DATE)));
+    public List<GiftCertificate> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+        List<GiftCertificate> giftCertificates = new ArrayList<>();
+        if (resultSet.next()) {
+            while (!resultSet.isAfterLast()) {
+                long giftCertificateId = resultSet.getLong(ID);
+                String giftCertificateName = resultSet.getString(NAME);
+                String description = resultSet.getString(DESCRIPTION);
+                BigDecimal price = resultSet.getBigDecimal(PRICE);
+                int duration = resultSet.getInt(DURATION);
+                LocalDateTime createDate =  resultSet.getObject(CREATE_DATE, LocalDateTime.class);
+                LocalDateTime lastUpdateDate = resultSet.getObject(LAST_UPDATE_DATE, LocalDateTime.class);
+
+                Set<Tag> tags = new HashSet<>();
+                do {
+                    long tagId = resultSet.getLong(TAG_ID);
+                    String tagName = resultSet.getString(TAG_NAME);
+                    if (tagId != 0 && tagName != null) {
+                        tags.add(new Tag(tagId, tagName));
+                    }
+                } while (resultSet.next() && resultSet.getLong(ID) == giftCertificateId);
+                GiftCertificate giftCertificate = new GiftCertificate(giftCertificateId, giftCertificateName,
+                        description, price, duration, createDate, lastUpdateDate);
+                giftCertificate.setTags(tags);
+                giftCertificates.add(giftCertificate);
             }
-            Long tagId = resultSet.getLong(TAG_ID);
-            String tagName = resultSet.getString(TAG_NAME);
-            listOfTags.add(new Tag(tagId, tagName));
         }
-        giftCertificate.setTags(listOfTags);
-        return giftCertificate;
+        return giftCertificates;
     }
 }

@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 public class ExceptionResponse {
 
-    private static final String BUNDLE_BASE_NAME = "messages";
+    private static final String BUNDLE_BASE_NAME = "locale/messages";
     private String errorMessage;
     private int errorCode;
 
