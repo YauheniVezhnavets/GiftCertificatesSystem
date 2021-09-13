@@ -1,4 +1,4 @@
-package com.epam.esm.wrapper;
+package com.epam.esm.mapper;
 
 
 import com.epam.esm.dto.GiftCertificateDto;
@@ -6,16 +6,15 @@ import com.epam.esm.entities.GiftCertificate;
 import com.epam.esm.entities.Tag;
 import org.springframework.stereotype.Component;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Component
-public class GiftCertificateDtoWrapper {
+public class GiftCertificateDtoMapper {
 
-    public GiftCertificateDto wrap(GiftCertificate giftCertificate) {
+    public GiftCertificateDto map(GiftCertificate giftCertificate) {
         List <String> listOfTagsName = new ArrayList<>();
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto(
                 giftCertificate.getCertificateId(), giftCertificate.getName(),
@@ -29,7 +28,7 @@ public class GiftCertificateDtoWrapper {
         return giftCertificateDto;
     }
 
-    public GiftCertificate unwrap(GiftCertificateDto giftCertificateDto) {
+    public GiftCertificate unmap(GiftCertificateDto giftCertificateDto) {
 
         GiftCertificate giftCertificate = new GiftCertificate(
                 giftCertificateDto.getId(), giftCertificateDto.getName(),

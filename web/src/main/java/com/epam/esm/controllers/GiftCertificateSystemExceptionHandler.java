@@ -58,7 +58,7 @@ public class GiftCertificateSystemExceptionHandler extends ResponseEntityExcepti
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InvalidFieldException.class)
+    @ExceptionHandler(DaoException.class)
     public ResponseEntity<ExceptionResponse> handleDaoException(DaoException exception,
                                                                                  WebRequest request) {
         Locale locale = request.getLocale();
@@ -69,6 +69,4 @@ public class GiftCertificateSystemExceptionHandler extends ResponseEntityExcepti
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-
 }

@@ -4,9 +4,14 @@ package com.epam.esm.config;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.Properties;
 
 
 public class GiftCertificateServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+    private static final String SPRING_ACTIVE_PROPERTY_FILE_PATH = "/property/spring_active.properties";
+    private static final String SPRING_PROFILE_ACTIVE = "spring.profiles.active";
 
     @Override
     protected Class<?>[] getRootConfigClasses(){
@@ -27,6 +32,12 @@ public class GiftCertificateServletInitializer extends AbstractAnnotationConfigD
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         super.onStartup(servletContext);
-        servletContext.setInitParameter("spring.profiles.active", "prod");
+        Properties properties = new Properties();
+        try {
+            properties.load(getClass().getClassLoader().getResourceAsStream(SPRING_ACTIVE_PROPERTY_FILE_PATH));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        servletContext.setInitParameter(SPRING_PROFILE_ACTIVE, properties.getProperty(SPRING_PROFILE_ACTIVE));
     }
 }

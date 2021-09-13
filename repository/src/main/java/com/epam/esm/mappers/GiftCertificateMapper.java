@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -25,6 +24,8 @@ public class GiftCertificateMapper implements ResultSetExtractor <List<GiftCerti
     private static final String LAST_UPDATE_DATE = "last_update_date";
     private static final String TAG_NAME = "tag_name";
     private static final String TAG_ID = "tag_id";
+    public static final Calendar tzGMT = Calendar.getInstance(TimeZone.getTimeZone("GMT+3"));
+
 
     @Override
     public List<GiftCertificate> extractData(ResultSet resultSet) throws SQLException, DataAccessException {

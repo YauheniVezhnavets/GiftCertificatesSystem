@@ -10,7 +10,7 @@ import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validator.GiftCertificateValidator;
-import com.epam.esm.wrapper.GiftCertificateDtoWrapper;
+import com.epam.esm.mapper.GiftCertificateDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
     private final TagDao tagDao;
     private final GiftCertificateTagDao giftCertificateTagDao;
     private final GiftCertificateValidator giftCertificateValidator;
-    private final GiftCertificateDtoWrapper giftCertificateDtoWrapper;
+    private final GiftCertificateDtoMapper giftCertificateDtoWrapper;
     private final String TIME_ZONE = "GMT+3";
 
 
@@ -34,12 +34,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
     public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, TagDao tagDao,
                                       GiftCertificateTagDao giftCertificateTagDao,
                                       GiftCertificateValidator giftCertificateValidator,
-                                      GiftCertificateDtoWrapper giftCertificateDtoWrapper) {
+                                      GiftCertificateDtoMapper giftCertificateDtoMapper) {
         this.giftCertificateDao = giftCertificateDao;
         this.tagDao = tagDao;
         this.giftCertificateTagDao = giftCertificateTagDao;
         this.giftCertificateValidator = giftCertificateValidator;
-        this.giftCertificateDtoWrapper = giftCertificateDtoWrapper;
+        this.giftCertificateDtoWrapper = giftCertificateDtoMapper;
     }
 
 
@@ -57,7 +57,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         List<GiftCertificateDto> sortedDtoGiftCertificates = new ArrayList<>();
 
         sortedGiftCertificates.forEach(giftCertificate ->
-                sortedDtoGiftCertificates.add(giftCertificateDtoWrapper.wrap(giftCertificate)));
+                sortedDtoGiftCertificates.add(giftCertificateDtoWrapper.map(giftCertificate)));
         return sortedDtoGiftCertificates;
     }
 
@@ -67,13 +67,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         if (optionalGiftCertificate.isEmpty()) {
             throw new ResourceNotFoundException(id);
         }
-        return giftCertificateDtoWrapper.wrap(optionalGiftCertificate.get());
+        return giftCertificateDtoWrapper.map(optionalGiftCertificate.get());
     }
 
     @Override
     @Transactional
     public void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws InvalidFieldException {
-        GiftCertificate giftCertificate = giftCertificateDtoWrapper.unwrap(giftCertificateDto);
+        GiftCertificate giftCertificate = giftCertificateDtoWrapper.unmap(giftCertificateDto);
 
         if (!giftCertificateValidator.isGiftCertificateCreationFormValid(giftCertificate)) {
             throw new InvalidFieldException();
@@ -97,7 +97,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
             throw new ResourceNotFoundException(id);
         }
 
-        GiftCertificate giftCertificate = giftCertificateDtoWrapper.unwrap(giftCertificateDto);
+        GiftCertificate giftCertificate = giftCertificateDtoWrapper.unmap(giftCertificateDto);
 
         if (!giftCertificateValidator.isGiftCertificateCreationFormValid(giftCertificate)) {
             throw new InvalidFieldException();
@@ -146,15 +146,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         List<Long> tagIdsBeforeUpdate = giftCertificateTagDao.getAllTagIdConnectedWithCertificateId(id);
         List<Long> tagIdsAfterUpdate = tagDao.getAllTagsIdConnectedWithGiftCertificate(giftCertificate.getTags());
 
+        tagIdsAfterUpdate.stream().filter(tagId->!tagIdsBeforeUpdate.contains(tagId)).
+                forEach(tagId -> giftCertificateTagDao.addTagId(id,tagId));
 
-        for (Long tagId : tagIdsAfterUpdate){
-            if(!tagIdsBeforeUpdate.contains(tagId))
-            giftCertificateTagDao.addTagId(id, tagId);
-        }
+        tagIdsBeforeUpdate.stream().filter(tagId->!tagIdsAfterUpdate.contains(tagId)).
+                forEach(tagId -> giftCertificateTagDao.deleteTagId(id,tagId));
 
-        for (Long tagId : tagIdsBeforeUpdate){
-            if(!tagIdsAfterUpdate.contains(tagId))
-            giftCertificateTagDao.deleteTagId(id, tagId);
-        }
     }
 }

@@ -11,10 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class TagDao implements EntityDao<Tag> {
@@ -38,7 +35,13 @@ public class TagDao implements EntityDao<Tag> {
             statement.setString(1, tag.getName());
             return statement;
         }, keyHolder);
-        return keyHolder.getKey().longValue();
+        Long newId;
+        if (keyHolder.getKeys().size() > 1) {
+            newId = (Long)keyHolder.getKeys().get("id");
+        } else {
+            newId= keyHolder.getKey().longValue();
+        }
+        return newId;
     }
 
 

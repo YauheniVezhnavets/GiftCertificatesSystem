@@ -46,8 +46,13 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
                     statement.setObject(6, giftCertificate.getLastUpdateDate());
                     return statement;
                 }, keyHolder);
-        Number key = keyHolder.getKey();
-        return key.longValue();
+        Long newId;
+        if (keyHolder.getKeys().size() > 1) {
+            newId = (Long)keyHolder.getKeys().get("id");
+        } else {
+            newId= keyHolder.getKey().longValue();
+        }
+        return newId;
     }
 
     @Override

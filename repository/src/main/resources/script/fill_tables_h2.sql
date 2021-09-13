@@ -17,6 +17,5 @@ insert into gift_certificate_tag (gift_certificate_id, tag_id)
 values (1, 2);
 insert into gift_certificate_tag (gift_certificate_id, tag_id)
 values (2, 1);
-insert into gift_certificate_tag (gift_certificate_id, tag_id)
-values (2, 2);
+
 

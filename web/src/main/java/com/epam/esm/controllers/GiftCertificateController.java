@@ -20,7 +20,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/giftCertificates")
+@RequestMapping("/certificates")
 public class GiftCertificateController {
 
     private static final String JSON = "application/json";

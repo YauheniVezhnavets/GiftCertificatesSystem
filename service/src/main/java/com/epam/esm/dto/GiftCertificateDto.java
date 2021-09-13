@@ -17,16 +17,23 @@ public class GiftCertificateDto {
     private String description;
     private BigDecimal price;
     private Integer duration;
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+ //   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDate;
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+ //   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastUpdateDate;
 
     private List<String> tags = new ArrayList<>();
 
     public GiftCertificateDto() {
+    }
+
+    public GiftCertificateDto(String name, String description, BigDecimal price, Integer duration) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
     }
 
     public GiftCertificateDto(long id, String name, String description, BigDecimal price, Integer duration,
