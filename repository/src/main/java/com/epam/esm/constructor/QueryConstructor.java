@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class QueryConstructor {
 
-    private static final String SELECT_CERTIFICATES_WHERE_MATCH_TAG_NAME_FiRST_PART = "t.name IN ('";
-    private static final String SELECT_CERTIFICATES_WHERE_MATCH_TAG_NAME_SECOND_PART = "') ";
+    private static final String SELECT_CERTIFICATES_BY_TAG_NAME_FiRST_PART = "t.name IN ('";
+    private static final String SELECT_CERTIFICATES_BY_TAG_NAME_SECOND_PART = "') ";
     private static final String SELECT_CERTIFICATES_WHERE_MATCH_NAME_FIRST_PART = "gc.name like '%";
     private static final String SELECT_CERTIFICATES_WHERE_MATCH_NAME_SECOND_PART = "%' ";
     private static final String WHERE = "WHERE ";
@@ -27,7 +27,7 @@ public class QueryConstructor {
         StringBuilder query = new StringBuilder(SqlGiftCertificateQuery.FIND_ALL_CERTIFICATES);
 
 
-        if (isNotNullThreeParameters(tagName, giftCertificateName, description)) {
+        if (isAnyParameterNotNull(tagName, giftCertificateName, description)) {
             query.append(WHERE);
         }
 
@@ -55,6 +55,13 @@ public class QueryConstructor {
             getAppendDescription(description, query);
         }
 
+        sortQuery(sortByName, sortByDate, query);
+
+        return query.toString();
+    }
+
+
+    private void sortQuery(String sortByName, String sortByDate, StringBuilder query) {
         if (sortByName != null || sortByDate != null) {
             query.append(ORDER_BY);
             if (sortByName != null) {
@@ -75,8 +82,6 @@ public class QueryConstructor {
                 }
             }
         }
-
-        return query.toString();
     }
 
     private void getAppendName(String giftCertificateName, StringBuilder query) {
@@ -85,8 +90,8 @@ public class QueryConstructor {
     }
 
     private void getAppendTag(String tagName, StringBuilder query) {
-        query.append(SELECT_CERTIFICATES_WHERE_MATCH_TAG_NAME_FiRST_PART).append(tagName)
-                .append(SELECT_CERTIFICATES_WHERE_MATCH_TAG_NAME_SECOND_PART);
+        query.append(SELECT_CERTIFICATES_BY_TAG_NAME_FiRST_PART).append(tagName)
+                .append(SELECT_CERTIFICATES_BY_TAG_NAME_SECOND_PART);
     }
 
     private StringBuilder getAppendDescription(String description, StringBuilder query) {
@@ -94,7 +99,7 @@ public class QueryConstructor {
                 .append(SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_SECOND_PART);
     }
 
-    private boolean isNotNullThreeParameters(String tagName, String giftCertificateName, String description) {
+    private boolean isAnyParameterNotNull(String tagName, String giftCertificateName, String description) {
         return tagName != null || giftCertificateName != null || description != null;
     }
 }

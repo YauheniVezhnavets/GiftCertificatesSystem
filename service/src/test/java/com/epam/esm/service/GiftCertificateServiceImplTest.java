@@ -89,13 +89,13 @@ public class GiftCertificateServiceImplTest {
         when(giftCertificateDao.findById(anyLong())).thenReturn(optionalGiftCertificate);
         doNothing().when(giftCertificateDao).delete(anyLong());
         doNothing().when(giftCertificateTagDao)
-                .deleteConnectionBetweenGiftCertificateAndTagsByGiftCertificateId(anyLong());
+                .unlinkAllTagsFromCertificateAndTagsByCertificateId(anyLong());
 
         giftCertificateServiceImpl.deleteGiftCertificate(1L);
 
         verify(giftCertificateDao, times(1)).delete(anyLong());
         verify(giftCertificateTagDao, times(1))
-                .deleteConnectionBetweenGiftCertificateAndTagsByGiftCertificateId(anyLong());
+                .unlinkAllTagsFromCertificateAndTagsByCertificateId(anyLong());
     }
 
 

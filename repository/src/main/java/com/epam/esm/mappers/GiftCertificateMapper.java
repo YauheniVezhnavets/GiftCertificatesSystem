@@ -38,20 +38,27 @@ public class GiftCertificateMapper implements ResultSetExtractor <List<GiftCerti
                 LocalDateTime createDate =  resultSet.getObject(CREATE_DATE, LocalDateTime.class);
                 LocalDateTime lastUpdateDate = resultSet.getObject(LAST_UPDATE_DATE, LocalDateTime.class);
 
-                Set<Tag> tags = new HashSet<>();
-                do {
-                    long tagId = resultSet.getLong(TAG_ID);
-                    String tagName = resultSet.getString(TAG_NAME);
-                    if (tagId != 0 && tagName != null) {
-                        tags.add(new Tag(tagId, tagName));
-                    }
-                } while (resultSet.next() && resultSet.getLong(ID) == giftCertificateId);
+                Set<Tag> tags = extractTags(resultSet, giftCertificateId);
                 GiftCertificate giftCertificate = new GiftCertificate(giftCertificateId, giftCertificateName,
                         description, price, duration, createDate, lastUpdateDate);
+
+
                 giftCertificate.setTags(tags);
                 giftCertificates.add(giftCertificate);
             }
         }
         return giftCertificates;
+    }
+
+    private Set <Tag> extractTags(ResultSet resultSet, long giftCertificateId) throws SQLException {
+        Set<Tag> tags = new HashSet<>();
+        do {
+            long tagId = resultSet.getLong(TAG_ID);
+            String tagName = resultSet.getString(TAG_NAME);
+            if (tagId != 0 && tagName != null) {
+                tags.add(new Tag(tagId, tagName));
+            }
+        } while (resultSet.next() && resultSet.getLong(ID) == giftCertificateId);
+        return tags;
     }
 }

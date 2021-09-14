@@ -20,28 +20,28 @@ public class GiftCertificateTagDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addTagId(long giftCertificateId, long tagId) {
+    public void linkTagToCertificateById(long giftCertificateId, long tagId) {
        jdbcTemplate.update(SqlGiftCertificateTagQuery.CONNECT_TAG_TO_CERTIFICATE,giftCertificateId, tagId);
     }
 
-    public void deleteTagId(long giftCertificateId, long tagId) {
+    public void unlinkTagFromCertificateById(long giftCertificateId, long tagId) {
         jdbcTemplate.update(SqlGiftCertificateTagQuery.DISCONNECT_TAG_TO_CERTIFICATE,giftCertificateId,tagId);
     }
 
-    public void createConnections(long giftCertificateId, Set<Tag> tags) {
+    public void linkAllTagsToCertificate(long giftCertificateId, Set<Tag> tags) {
         for (Tag tag : tags) {
             jdbcTemplate.update(SqlGiftCertificateTagQuery.MAKE_TIDED_TAGS_AND_CERTIFICATIONS,
                     giftCertificateId, tag.getName());
         }
     }
 
-    public List <Long> getAllTagIdConnectedWithCertificateId (long giftCertificateId){
+    public List <Long> findAllTagIdsForCertificate (long giftCertificateId){
         return jdbcTemplate.queryForList(SqlGiftCertificateTagQuery.SELECT_ALL_TAG_ID_BY_CERTIFICATE_ID,
                 Long.class,giftCertificateId);
     }
 
 
-    public void deleteConnectionBetweenGiftCertificateAndTagsByGiftCertificateId(long giftCertificateId) {
+    public void unlinkAllTagsFromCertificateAndTagsByCertificateId(long giftCertificateId) {
         jdbcTemplate.update(SqlGiftCertificateTagQuery.MAKE_UNTIED_CERTIFICATE,giftCertificateId);
     }
 

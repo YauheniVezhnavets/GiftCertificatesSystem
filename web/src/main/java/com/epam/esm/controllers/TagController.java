@@ -24,10 +24,10 @@ public class TagController {
     private static final String JSON = "application/json";
     private static final String ID = "id";
 
-    private final TagService tagService;
+    private final TagService <Tag> tagService;
 
     @Autowired
-    public TagController(TagService tagService) {
+    public TagController(TagService <Tag> tagService) {
         this.tagService = tagService;
     }
 

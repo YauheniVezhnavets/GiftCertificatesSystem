@@ -45,18 +45,10 @@ public class GiftCertificateDaoTest {
         giftCertificateDao = new GiftCertificateDao(jdbcTemplate, giftCertificateMapper, queryConstructor);
     }
 
+
+
     @Test
     @Order(1)
-    public void methodShouldReturnTrueWhenGiftCertificateIdCorrect() {
-        TEST_GIFT_CERTIFICATE_SECOND.setTags(Set.of(new Tag(1L, "Relax")));
-        Optional<GiftCertificate> actualOfOptional = giftCertificateDao.findById(2L);
-
-        assertEquals(TEST_GIFT_CERTIFICATE_SECOND, actualOfOptional.get());
-    }
-
-
-    @Test
-    @Order(2)
     public void methodShouldReturnAllCertificates() {
         List<GiftCertificate> giftCertificates = giftCertificateDao.getGiftCertificates(null, null, null, null, null);
 
@@ -64,7 +56,7 @@ public class GiftCertificateDaoTest {
     }
 
     @Test
-    @Order(3)
+    @Order(2)
     public void methodShouldReturnEmptyGiftCertificateWhenTagIdIncorrect() {
         TEST_GIFT_CERTIFICATE_FIRST.setTags(TEST_SET_OF_TAGS);
         Optional<GiftCertificate> expected = Optional.empty();
@@ -74,7 +66,7 @@ public class GiftCertificateDaoTest {
 
 
     @Test
-    @Order(4)
+    @Order(3)
     public void methodShouldCreateNewGiftCertificate() {
 
         GiftCertificate testGiftCertificate = new GiftCertificate("test", "testDescription",
@@ -89,7 +81,7 @@ public class GiftCertificateDaoTest {
     }
 
     @Test
-    @Order(5)
+    @Order(4)
     public void methodShouldUpdateGiftCertificateWhenUpdateTag() {
 
         Long id = 1L;
@@ -108,7 +100,7 @@ public class GiftCertificateDaoTest {
     }
 
     @Test
-    @Order(6)
+    @Order(5)
     public void methodShouldReturnEmptyWhenDeleteTag() {
 
         Long id = 1L;

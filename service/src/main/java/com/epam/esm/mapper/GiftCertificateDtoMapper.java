@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class GiftCertificateDtoMapper {
@@ -21,14 +22,13 @@ public class GiftCertificateDtoMapper {
                 giftCertificate.getDescription(), giftCertificate.getPrice(), giftCertificate.getDuration(),
                giftCertificate.getCreateDate(),giftCertificate.getLastUpdateDate());
 
-        for (Tag tag : giftCertificate.getTags()) {
-            listOfTagsName.add(tag.getName());
-        }
+        giftCertificate.getTags().stream().forEach(tag -> listOfTagsName.add(tag.getName()));
+
         giftCertificateDto.setTags(listOfTagsName);
         return giftCertificateDto;
     }
 
-    public GiftCertificate unmap(GiftCertificateDto giftCertificateDto) {
+    public GiftCertificate mapToDto(GiftCertificateDto giftCertificateDto) {
 
         GiftCertificate giftCertificate = new GiftCertificate(
                 giftCertificateDto.getId(), giftCertificateDto.getName(),
@@ -37,9 +37,8 @@ public class GiftCertificateDtoMapper {
 
         Set<Tag> setOfTags = new HashSet<>();
 
-        for (String tagName : giftCertificateDto.getTags()) {
-            setOfTags.add(new Tag(tagName));
-        }
+        giftCertificateDto.getTags().stream().forEach(tagName -> setOfTags.add(new Tag(tagName)));
+
         giftCertificate.setTags(setOfTags);
         return giftCertificate;
     }

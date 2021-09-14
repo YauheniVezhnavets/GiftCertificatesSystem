@@ -26,10 +26,10 @@ public class GiftCertificateController {
     private static final String JSON = "application/json";
     private static final String ID = "id";
 
-    GiftCertificateService giftCertificateService;
+    private final GiftCertificateService <GiftCertificate> giftCertificateService;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService giftCertificateService) {
+    public GiftCertificateController(GiftCertificateService <GiftCertificate> giftCertificateService) {
         this.giftCertificateService = giftCertificateService;
     }
 

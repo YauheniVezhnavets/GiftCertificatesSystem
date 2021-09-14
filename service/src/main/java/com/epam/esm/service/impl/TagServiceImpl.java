@@ -11,6 +11,7 @@ import com.epam.esm.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -35,11 +36,8 @@ public class TagServiceImpl implements TagService<Tag> {
 
     @Override
     public Tag getTag(long id) throws ResourceNotFoundException {
-        Optional<Tag> optionalTag = tagDao.findById(id);
-        if (optionalTag.isPresent()) {
-            return optionalTag.get();
-        }
-        throw new ResourceNotFoundException(id);
+
+        return tagDao.findById(id).orElseThrow((() -> new ResourceNotFoundException(id)));
     }
 
 

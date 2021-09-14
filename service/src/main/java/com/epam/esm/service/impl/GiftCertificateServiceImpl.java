@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCertificate> {
@@ -54,26 +55,23 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
             giftCertificate.setTags(tags);
         }
 
-        List<GiftCertificateDto> sortedDtoGiftCertificates = new ArrayList<>();
+        return sortedGiftCertificates.stream().map(giftCertificateDtoWrapper::map).collect(Collectors.toList());
 
-        sortedGiftCertificates.forEach(giftCertificate ->
-                sortedDtoGiftCertificates.add(giftCertificateDtoWrapper.map(giftCertificate)));
-        return sortedDtoGiftCertificates;
     }
 
     @Override
     public GiftCertificateDto getGiftCertificate(long id) throws ResourceNotFoundException {
-        Optional<GiftCertificate> optionalGiftCertificate = giftCertificateDao.findById(id);
-        if (optionalGiftCertificate.isEmpty()) {
-            throw new ResourceNotFoundException(id);
-        }
-        return giftCertificateDtoWrapper.map(optionalGiftCertificate.get());
+
+        GiftCertificate giftCertificate = giftCertificateDao.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException(id));
+
+        return giftCertificateDtoWrapper.map(giftCertificate);
     }
 
     @Override
     @Transactional
     public void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws InvalidFieldException {
-        GiftCertificate giftCertificate = giftCertificateDtoWrapper.unmap(giftCertificateDto);
+        GiftCertificate giftCertificate = giftCertificateDtoWrapper.mapToDto(giftCertificateDto);
 
         if (!giftCertificateValidator.isGiftCertificateCreationFormValid(giftCertificate)) {
             throw new InvalidFieldException();
@@ -85,7 +83,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         checkForTags(giftCertificate.getTags());
 
         long lastAddedId = giftCertificateDao.create(giftCertificate);
-        giftCertificateTagDao.createConnections(lastAddedId, giftCertificate.getTags());
+        giftCertificateTagDao.linkAllTagsToCertificate(lastAddedId, giftCertificate.getTags());
     }
 
     @Override
@@ -97,7 +95,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
             throw new ResourceNotFoundException(id);
         }
 
-        GiftCertificate giftCertificate = giftCertificateDtoWrapper.unmap(giftCertificateDto);
+        GiftCertificate giftCertificate = giftCertificateDtoWrapper.mapToDto(giftCertificateDto);
 
         if (!giftCertificateValidator.isGiftCertificateCreationFormValid(giftCertificate)) {
             throw new InvalidFieldException();
@@ -108,7 +106,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         checkForTags(giftCertificate.getTags());
 
         if (giftCertificate.getTags().isEmpty()){
-            giftCertificateTagDao.deleteConnectionBetweenGiftCertificateAndTagsByGiftCertificateId(id);
+            giftCertificateTagDao.unlinkAllTagsFromCertificateAndTagsByCertificateId(id);
         }
         else {
             connectCertificatesAndTags(id, giftCertificate);
@@ -124,33 +122,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         if (giftCertificateDao.findById(id).isEmpty()) {
             throw new ResourceNotFoundException(id);
         }
-        giftCertificateTagDao.deleteConnectionBetweenGiftCertificateAndTagsByGiftCertificateId(id);
+        giftCertificateTagDao.unlinkAllTagsFromCertificateAndTagsByCertificateId(id);
         giftCertificateDao.delete(id);
     }
 
     public Set <Tag> getTagsByGiftCertificateId(long id) throws ResourceNotFoundException {
         List <Tag> listOfTags = tagDao.getAllTagsConnectedWithCertificateId(id);
-        Set<Tag> setOfTags = new HashSet<>(listOfTags);
-        return setOfTags;
+        return new HashSet<>(listOfTags);
+
     }
 
     private void checkForTags(Set <Tag> newTags) {
-        List<String> newTagNames = new ArrayList<>();
+        List<String> newTagNames = newTags.stream().map(Tag::getName).collect(Collectors.toList());
 
-        newTags.stream().forEach(tag -> newTagNames.add(tag.getName()));
         newTagNames.stream().filter(tagName -> tagDao.findByName(tagName).isEmpty())
                 .forEach(tagName -> tagDao.create(new Tag(tagName)));
     }
 
     private void connectCertificatesAndTags(long id, GiftCertificate giftCertificate) {
-        List<Long> tagIdsBeforeUpdate = giftCertificateTagDao.getAllTagIdConnectedWithCertificateId(id);
+        List<Long> tagIdsBeforeUpdate = giftCertificateTagDao.findAllTagIdsForCertificate(id);
         List<Long> tagIdsAfterUpdate = tagDao.getAllTagsIdConnectedWithGiftCertificate(giftCertificate.getTags());
 
         tagIdsAfterUpdate.stream().filter(tagId->!tagIdsBeforeUpdate.contains(tagId)).
-                forEach(tagId -> giftCertificateTagDao.addTagId(id,tagId));
+                forEach(tagId -> giftCertificateTagDao.linkTagToCertificateById(id,tagId));
 
         tagIdsBeforeUpdate.stream().filter(tagId->!tagIdsAfterUpdate.contains(tagId)).
-                forEach(tagId -> giftCertificateTagDao.deleteTagId(id,tagId));
+                forEach(tagId -> giftCertificateTagDao.unlinkTagFromCertificateById(id,tagId));
 
     }
 }

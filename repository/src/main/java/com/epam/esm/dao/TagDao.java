@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class TagDao implements EntityDao<Tag> {
@@ -56,10 +57,8 @@ public class TagDao implements EntityDao<Tag> {
     }
 
     public List<Long> getAllTagsIdConnectedWithGiftCertificate(Set<Tag> tags) {
-        List<Long> listOfId = new ArrayList<>();
-        tags.stream().forEach(tag -> listOfId.add(jdbcTemplate.queryForObject(SqlTagQuery.FIND_TAG_ID_BY_NAME,
-                Long.class, tag.getName())));
-        return listOfId;
+        return tags.stream().map(tag -> jdbcTemplate.queryForObject(SqlTagQuery.FIND_TAG_ID_BY_NAME,
+                Long.class, tag.getName())).collect(Collectors.toList());
     }
 
 
