@@ -91,9 +91,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
     public void updateGiftCertificate(long id, GiftCertificateDto giftCertificateDto) throws InvalidFieldException,
             ResourceNotFoundException {
 
-        if (giftCertificateDao.findById(id).isEmpty()) {
-            throw new ResourceNotFoundException(id);
-        }
+        giftCertificateDao.findById(id).orElseThrow((() -> new ResourceNotFoundException(id)));
 
         GiftCertificate giftCertificate = giftCertificateDtoWrapper.mapToDto(giftCertificateDto);
 
@@ -119,9 +117,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
     @Override
     @Transactional
     public void deleteGiftCertificate(long id) throws ResourceNotFoundException {
-        if (giftCertificateDao.findById(id).isEmpty()) {
-            throw new ResourceNotFoundException(id);
-        }
+
+        giftCertificateDao.findById(id).orElseThrow((() -> new ResourceNotFoundException(id)));
+
         giftCertificateTagDao.unlinkAllTagsFromCertificateAndTagsByCertificateId(id);
         giftCertificateDao.delete(id);
     }
