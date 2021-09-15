@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+group 'com.epam.esm'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+      implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.3.9'
+      implementation group: 'org.springframework', name: 'spring-tx', version: '5.3.9'
+      testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+      testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+      testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+      implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
+      implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.4'
+      implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.4'
+      implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.4'
+      implementation project(':repository')
+}
+
+test {
+    useJUnitPlatform()
+}
