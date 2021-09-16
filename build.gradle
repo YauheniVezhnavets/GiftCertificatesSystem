@@ -2,27 +2,23 @@ plugins {
     id 'java'
 }
 
-group 'com.epam.esm'
-version '1.0'
+    group 'com.epam.esm'
+    version '1.0'
+    sourceCompatibility = '11'
 
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
-
-
-repositories {
-    mavenCentral()
-}
+    compileJava.options.encoding = "UTF-8"
+    compileTestJava.options.encoding = "UTF-8"
 
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
-    implementation group: 'org.springframework', name: 'spring-core', version: '5.3.9'
-    implementation group: 'org.springframework', name: 'spring-beans', version: '5.3.9'
-    implementation group: 'org.springframework', name: 'spring-context', version: '5.3.3'
-}
+    repositories {
+        mavenCentral()
+    }
 
+    dependencies {
+        testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.4'
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.5.4'
+    }
 
-test {
-    useJUnitPlatform()
-}
+    test {
+        useJUnitPlatform()
+    }
