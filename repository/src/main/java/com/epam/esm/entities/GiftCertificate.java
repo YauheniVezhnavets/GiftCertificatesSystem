@@ -1,11 +1,13 @@
 package com.epam.esm.entities;
 
 
+import org.springframework.hateoas.RepresentationModel;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public class GiftCertificate implements Identifiable {
+public class GiftCertificate extends RepresentationModel <GiftCertificate> implements Identifiable {
 
     private long certificateId;
     private String name;

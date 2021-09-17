@@ -11,6 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import org.springframework.hateoas.Link;
+
 import java.util.List;
 
 /**
@@ -39,7 +44,17 @@ public class TagController {
      */
     @GetMapping (produces = JSON)
     public ResponseEntity<List<Tag>> getTags() {
-        return new ResponseEntity<>(tagService.getTags(), HttpStatus.OK);
+
+        List<Tag> listOfTags = tagService.getTags();
+        listOfTags.stream().forEach(
+                tag -> tag.add(
+                        linkTo(methodOn(TagController.class).getTags()).withRel("getTags"),
+                        linkTo(methodOn(TagController.class).getTag(tag.getTagId())).withSelfRel(),
+                        linkTo(methodOn(TagController.class).deleteTag(tag.getTagId())).withRel("deleteTag")
+                )
+        );
+
+        return new ResponseEntity<>(listOfTags, HttpStatus.OK);
     }
 
     /**
@@ -51,7 +66,13 @@ public class TagController {
      */
     @GetMapping(value = "/{id}", produces = JSON)
     public ResponseEntity<Tag> getTag(@PathVariable(ID) long id) throws ResourceNotFoundException {
-        return new ResponseEntity<>(tagService.getTag(id), HttpStatus.OK);
+        Tag tag = tagService.getTag(id);
+        tag.add(
+                linkTo(methodOn(TagController.class).getTags()).withRel("getTags"),
+                linkTo(methodOn(TagController.class).getTag(id)).withSelfRel(),
+                linkTo(methodOn(TagController.class).deleteTag(id)).withRel("deleteTag")
+        );
+        return new ResponseEntity<>(tag, HttpStatus.OK);
     }
     /**
      * Creates new {@link Tag} object and returns an {@link ResponseEntity} object contained

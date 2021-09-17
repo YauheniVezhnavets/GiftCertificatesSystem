@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.5.4'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.4'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.4'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.4'
     implementation project(':service')
@@ -22,8 +22,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'com.epam.esm.SpringBootApp'
+    mainClass.set('com.epam.esm.SpringBootApp')
 }
-
 
 

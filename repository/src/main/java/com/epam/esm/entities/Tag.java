@@ -1,7 +1,9 @@
 package com.epam.esm.entities;
 
 
-public class Tag implements Identifiable {
+import org.springframework.hateoas.RepresentationModel;
+
+public class Tag extends RepresentationModel <Tag> implements Identifiable {
 
     private long tagId;
     private String name;

@@ -2,23 +2,24 @@ plugins {
     id 'java'
 }
 
-    group 'com.epam.esm'
-    version '1.0'
-    sourceCompatibility = '11'
+group 'com.epam.esm'
+version '1.0'
+sourceCompatibility = '11'
 
-    compileJava.options.encoding = "UTF-8"
-    compileTestJava.options.encoding = "UTF-8"
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
 
 
-    repositories {
-        mavenCentral()
-    }
+repositories {
+    mavenCentral()
+}
 
-    dependencies {
-        testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.4'
-        implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.5.4'
-    }
+dependencies {
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.5.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.5.4'
+}
 
-    test {
-        useJUnitPlatform()
-    }
+test {
+    useJUnitPlatform()
+}
