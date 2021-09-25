@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 public class GiftCertificateDtoMapper {
 
     public GiftCertificateDto map(GiftCertificate giftCertificate) {
-        List <String> listOfTagsName = new ArrayList<>();
+       List <String> listOfTagsName = new ArrayList<>();
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto(
                 giftCertificate.getCertificateId(), giftCertificate.getName(),
                 giftCertificate.getDescription(), giftCertificate.getPrice(), giftCertificate.getDuration(),
-               giftCertificate.getCreateDate(),giftCertificate.getLastUpdateDate());
+                giftCertificate.getCreateDate(),giftCertificate.getLastUpdateDate());
 
         giftCertificate.getTags().stream().forEach(tag -> listOfTagsName.add(tag.getName()));
 

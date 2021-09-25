@@ -1,28 +1,63 @@
 package com.epam.esm.entities;
 
-
 import org.springframework.hateoas.RepresentationModel;
 
+import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public class GiftCertificate extends RepresentationModel <GiftCertificate> implements Identifiable {
 
+@Entity
+@Table(name = "gift_certificate")
+public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Identifiable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long certificateId;
+
+    @NotBlank
+    @Size(min = 3, max = 50)
+    @Column(name = "name")
     private String name;
+
+    @NotBlank
+    @Size(min = 5, max = 100)
+    @Column(name = "description")
     private String description;
+
+    @DecimalMin(value = "1.0")
+    @NotNull
+    @Column(name = "price")
     private BigDecimal price;
+
+    @Min(1)
+    @NotNull
+    @Column(name = "duration")
     private int duration;
+
+    @Column(name = "create_date")
     private LocalDateTime createDate;
+
+    @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "gift_certificate_tag",
+            joinColumns = @JoinColumn(name = "gift_certificate_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
+    )
     private Set<Tag> tags;
 
     public GiftCertificate() {
 
     }
 
-    public GiftCertificate(long certificateId, String name, LocalDateTime createDate) {
+    public GiftCertificate(long certificateId, String name, LocalDateTime createDate
+    ) {
         this.certificateId = certificateId;
         this.name = name;
         this.createDate = createDate;
@@ -38,9 +73,9 @@ public class GiftCertificate extends RepresentationModel <GiftCertificate> imple
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public GiftCertificate(long id,String name, String description, BigDecimal price, int duration,
+    public GiftCertificate(long id, String name, String description, BigDecimal price, int duration,
                            LocalDateTime createDate, LocalDateTime lastUpdateDate) {
-        this.certificateId =id;
+        this.certificateId = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -51,10 +86,6 @@ public class GiftCertificate extends RepresentationModel <GiftCertificate> imple
 
     public long getCertificateId() {
         return certificateId;
-    }
-
-    public void setCertificateId(long certificateId) {
-        this.certificateId = certificateId;
     }
 
     public String getName() {
@@ -105,16 +136,23 @@ public class GiftCertificate extends RepresentationModel <GiftCertificate> imple
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public Set <Tag> getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(Set <Tag> tags) {
+    public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
 
-    public void addTag(Tag tag) {
-        this.tags.add(tag);
+    @PrePersist
+    private void onPrePersist() {
+        setCreateDate(LocalDateTime.now());
+        setLastUpdateDate(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    private void onPreUpdate() {
+        setLastUpdateDate(LocalDateTime.now());
     }
 
     @Override

@@ -33,7 +33,8 @@ public class GiftCertificateDto {
     }
 
     public GiftCertificateDto(long id, String name, String description, BigDecimal price, Integer duration,
-                              LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+                              LocalDateTime createDate, LocalDateTime lastUpdateDate
+    ) {
         this.id = id;
         this.name = name;
         this.description = description;

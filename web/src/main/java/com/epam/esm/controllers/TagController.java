@@ -16,6 +16,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.hateoas.Link;
 
+
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -85,7 +87,7 @@ public class TagController {
      */
 
     @PostMapping(consumes = JSON)
-    public ResponseEntity createTag(@RequestBody Tag tag) throws InvalidFieldException, ResourceDuplicateException {
+    public ResponseEntity createTag(@Valid @RequestBody Tag tag) throws InvalidFieldException, ResourceDuplicateException {
         tagService.createTag(tag);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

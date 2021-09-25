@@ -1,82 +1,59 @@
 package com.epam.esm.dao;
 
 
-import com.epam.esm.constant.SqlGiftCertificateQuery;
 import com.epam.esm.constructor.QueryConstructor;
 import com.epam.esm.entities.GiftCertificate;
-import com.epam.esm.mappers.GiftCertificateMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class GiftCertificateDao implements EntityDao<GiftCertificate> {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final GiftCertificateMapper giftCertificateMapper;
     private final QueryConstructor queryConstructor;
 
+
+    @PersistenceContext
+    protected EntityManager entityManager;
+
     @Autowired
-    public GiftCertificateDao(JdbcTemplate jdbcTemplate, GiftCertificateMapper giftCertificateMapper,
-                              QueryConstructor queryConstructor) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.giftCertificateMapper = giftCertificateMapper;
+    public GiftCertificateDao(QueryConstructor queryConstructor) {
         this.queryConstructor = queryConstructor;
     }
 
     @Override
     public long create(GiftCertificate giftCertificate) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(
-                (connection) -> {
-                    PreparedStatement statement =
-                            connection.prepareStatement(SqlGiftCertificateQuery.CREATE_CERTIFICATE,
-                                    Statement.RETURN_GENERATED_KEYS);
-                    statement.setString(1, giftCertificate.getName());
-                    statement.setString(2, giftCertificate.getDescription());
-                    statement.setBigDecimal(3, giftCertificate.getPrice());
-                    statement.setObject(4, giftCertificate.getDuration());
-                    statement.setObject(5, giftCertificate.getCreateDate());
-                    statement.setObject(6, giftCertificate.getLastUpdateDate());
-                    return statement;
-                }, keyHolder);
-        Long newId;
-        if (keyHolder.getKeys().size() > 1) {
-            newId = (Long)keyHolder.getKeys().get("id");
-        } else {
-            newId= keyHolder.getKey().longValue();
-        }
-        return newId;
+        entityManager.persist(giftCertificate);
+        entityManager.flush();
+        return giftCertificate.getCertificateId();
     }
 
     @Override
     public Optional<GiftCertificate> findById(long id) {
-        return jdbcTemplate.query(SqlGiftCertificateQuery.FIND_CERTIFICATES_BY_ID, giftCertificateMapper,
-                        new Object[]{id}).stream().findAny();
-
+        return Optional.ofNullable(entityManager.find(GiftCertificate.class, id));
     }
 
     public List<GiftCertificate> getGiftCertificates(String tagName, String giftCertificateName,
                                                      String description, String sortByName, String sortByDate) {
         String queryWithCondition = queryConstructor.constructQuery(tagName, giftCertificateName, description,
                 sortByName, sortByDate);
-        return jdbcTemplate.query(queryWithCondition, giftCertificateMapper);
+        return entityManager.createNativeQuery(queryWithCondition, GiftCertificate.class).getResultList();
     }
 
     @Override
     public void delete(long id) {
-        jdbcTemplate.update(SqlGiftCertificateQuery.DELETE_CERTIFICATE, id);
+        GiftCertificate giftCertificate = entityManager.find(GiftCertificate.class, id);
+        if (giftCertificate != null) {
+            entityManager.remove(giftCertificate);
+        }
     }
 
-    public void update(long id, GiftCertificate giftCertificate) {
-        jdbcTemplate.update(SqlGiftCertificateQuery.UPDATE_CERTIFICATE, giftCertificate.getName(),
-                giftCertificate.getDescription(), giftCertificate.getPrice(),giftCertificate.getDuration(),
-                giftCertificate.getLastUpdateDate(), id);
+    public void update(GiftCertificate giftCertificate) {
+            entityManager.merge(giftCertificate);
+            entityManager.flush();
     }
 }

@@ -10,7 +10,10 @@ import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -84,7 +87,7 @@ public class GiftCertificateController {
      */
 
     @PostMapping(consumes = JSON)
-    public ResponseEntity createGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto)
+    public ResponseEntity createGiftCertificate(@Valid @RequestBody GiftCertificateDto giftCertificateDto)
             throws InvalidFieldException {
         giftCertificateService.createGiftCertificate(giftCertificateDto);
         return new ResponseEntity(HttpStatus.CREATED);
@@ -103,7 +106,7 @@ public class GiftCertificateController {
      */
     @PatchMapping(value = "/{id}", consumes = JSON)
     public ResponseEntity updateGiftCertificate(@PathVariable(ID) long id,
-                                                @RequestBody GiftCertificateDto giftCertificateDto)
+                                                @Valid @RequestBody GiftCertificateDto giftCertificateDto)
             throws ResourceNotFoundException, InvalidFieldException {
         giftCertificateService.updateGiftCertificate(id, giftCertificateDto);
         return new ResponseEntity(HttpStatus.OK);

@@ -3,10 +3,25 @@ package com.epam.esm.entities;
 
 import org.springframework.hateoas.RepresentationModel;
 
-public class Tag extends RepresentationModel <Tag> implements Identifiable {
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
+
+@Entity
+@Table(name = "tag")
+public class Tag extends RepresentationModel<Tag> implements Identifiable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long tagId;
+
+    @NotBlank
+    @Size(min = 3, max = 50)
+    @Column(name = "name", unique = true)
     private String name;
+
 
     public Tag() {
 
@@ -25,10 +40,6 @@ public class Tag extends RepresentationModel <Tag> implements Identifiable {
         return tagId;
     }
 
-    public void setTagId(long tagId) {
-        this.tagId = tagId;
-    }
-
     public String getName() {
         return name;
     }
@@ -41,15 +52,20 @@ public class Tag extends RepresentationModel <Tag> implements Identifiable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         Tag tag = (Tag) o;
 
+        if (getTagId() != tag.getTagId()) return false;
         return getName() != null ? getName().equals(tag.getName()) : tag.getName() == null;
     }
 
     @Override
     public int hashCode() {
-        return getName() != null ? getName().hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (int) (getTagId() ^ (getTagId() >>> 32));
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        return result;
     }
 
     @Override
