@@ -25,7 +25,7 @@ public interface GiftCertificateService <T extends GiftCertificate> {
      * @return list of{@link GiftCertificateDto}
      */
     List<GiftCertificateDto> getGiftCertificates(Set<String> tagsName, String giftCertificateName, String description,
-                                                 String sortByName, String sortByDate);
+                                                 String sortByName, String sortByDate, int currentPage);
 
     /**
      * This method return gift certificate by his id.

@@ -43,8 +43,9 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
         return Optional.ofNullable(entityManager.find(GiftCertificate.class, id));
     }
 
-    public List<GiftCertificate> getGiftCertificates(Map <String,String> mapWithParameters, Set<String> tagsName) {
-        String queryWithCondition = queryConstructor.constructQuery(mapWithParameters,tagsName);
+    public List<GiftCertificate> getGiftCertificates(Map<String, String> mapWithParameters,
+                                                     Set<String> tagsName, int currentPage) {
+        String queryWithCondition = queryConstructor.constructQuery(mapWithParameters, tagsName, currentPage);
         return entityManager.createNativeQuery(queryWithCondition, GiftCertificate.class).getResultList();
     }
 
@@ -57,7 +58,7 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
     }
 
     public void update(GiftCertificate giftCertificate) {
-            entityManager.merge(giftCertificate);
-            entityManager.flush();
+        entityManager.merge(giftCertificate);
+        entityManager.flush();
     }
 }

@@ -29,9 +29,13 @@ public class QueryConstructor {
     private static final String SELECT_CERTIFICATES_BY_DATE_DESC = "gift_certificate.last_update_date DESC ";
     private static final String SELECT_ALL_CERTIFICATES = "Select * from gift_certificate ";
     private static final String GROUP_BY = " GROUP BY id HAVING ";
+    private static final String LIMIT = " LIMIT ";
+    private static final String OFFSET = " OFFSET ";
+    private static final int PAGE_SIZE = 5;
 
 
-    public String constructQuery(Map<String,String> mapWithParameters, Set<String> tagsName) {
+
+    public String constructQuery(Map<String,String> mapWithParameters, Set<String> tagsName, int currentPage) {
         StringBuilder query = new StringBuilder(SELECT_ALL_CERTIFICATES);
 
         if (mapWithParameters.get("giftCertificateName")!=null || mapWithParameters.get("description")!=null) {
@@ -53,6 +57,10 @@ public class QueryConstructor {
             }
 
             sortQuery(mapWithParameters.get("sortByName"), mapWithParameters.get("sortByDate"), query);
+
+
+            query.append(OFFSET).append(PAGE_SIZE * (currentPage - 1)).append(LIMIT).append(PAGE_SIZE);
+
 
             return query.toString();
         }

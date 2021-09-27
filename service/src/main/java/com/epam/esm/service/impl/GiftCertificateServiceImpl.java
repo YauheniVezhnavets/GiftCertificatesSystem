@@ -35,7 +35,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
 
     @Override
     public List<GiftCertificateDto> getGiftCertificates(Set <String> tagsName, String giftCertificateName, String description,
-                                                        String sortByName, String sortByDate) {
+                                                        String sortByName, String sortByDate, int currentPage) {
         Map <String,String> mapWithParameters = new HashMap<>();
 
         mapWithParameters.put("giftCertificateName", giftCertificateName);
@@ -44,7 +44,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         mapWithParameters.put("sortByDate", sortByDate);
 
 
-        List<GiftCertificate> sortedGiftCertificates = giftCertificateDao.getGiftCertificates(mapWithParameters,tagsName);
+        List<GiftCertificate> sortedGiftCertificates = giftCertificateDao.getGiftCertificates(mapWithParameters,
+                tagsName, currentPage);
 
         return sortedGiftCertificates.stream().distinct().map(giftCertificateDtoMapper::mapToDto).collect(Collectors.toList());
     }

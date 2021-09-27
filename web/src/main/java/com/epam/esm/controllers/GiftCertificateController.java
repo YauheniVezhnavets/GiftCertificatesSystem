@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
 
@@ -52,15 +53,16 @@ public class GiftCertificateController {
      * {@link GiftCertificateDto}
      */
 
-    @GetMapping(produces = JSON)
+    @GetMapping(produces = JSON, params = {"page"})
     public ResponseEntity<List<GiftCertificateDto>> getGiftCertificates(
             @RequestParam (name ="tagName",required = false) Set <String> tagsName,
             @RequestParam(required = false) String giftCertificateName,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String sortByName,
-            @RequestParam (required = false) String sortByDate) {
+            @RequestParam (required = false) String sortByDate,
+            @RequestParam(defaultValue = "1") @Min(1) int page) {
         return new ResponseEntity<>(giftCertificateService.getGiftCertificates(tagsName,giftCertificateName,
-                description,sortByName,sortByDate), HttpStatus.OK);
+                description,sortByName,sortByDate,page), HttpStatus.OK);
     }
 
     /**
