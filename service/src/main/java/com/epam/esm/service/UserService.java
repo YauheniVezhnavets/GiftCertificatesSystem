@@ -23,7 +23,7 @@ public interface UserService <T extends User> {
      *
      * @return list of{@link User}
      */
-    List<User> findUsers();
+    List<User> findUsers(int currentPage);
 
 
     /**

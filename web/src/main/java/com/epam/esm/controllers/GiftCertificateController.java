@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 /**
  *  The class that represents an API for basic giftCertificate-related application operations
@@ -42,7 +43,7 @@ public class GiftCertificateController {
      * from database.The retrieved data has to fill parameters received from request.
      * All parameters are optional.
      *
-     * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
+  //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
      * @param giftCertificateName - part of a name of searched gift certificate.
      * @param description - part of a description of searched gift certificate.
      * @param sortByName - sort of the retrieved gift certificates by name.
@@ -53,12 +54,12 @@ public class GiftCertificateController {
 
     @GetMapping(produces = JSON)
     public ResponseEntity<List<GiftCertificateDto>> getGiftCertificates(
-            @RequestParam(required = false) String tagName,
+            @RequestParam (name ="tagName",required = false) Set <String> tagsName,
             @RequestParam(required = false) String giftCertificateName,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String sortByName,
             @RequestParam (required = false) String sortByDate) {
-        return new ResponseEntity<>(giftCertificateService.getGiftCertificates(tagName,giftCertificateName,
+        return new ResponseEntity<>(giftCertificateService.getGiftCertificates(tagsName,giftCertificateName,
                 description,sortByName,sortByDate), HttpStatus.OK);
     }
 

@@ -2,11 +2,13 @@ package com.epam.esm.service;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entities.GiftCertificate;
+import com.epam.esm.entities.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceNotFoundException;
 
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * This interface represents Service implementation that connected controller with Data Access Object.
@@ -22,8 +24,8 @@ public interface GiftCertificateService <T extends GiftCertificate> {
      * This method return existing gift certificates with criteria.
      * @return list of{@link GiftCertificateDto}
      */
-    List<GiftCertificateDto> getGiftCertificates(String tagName, String giftCertificateName, String description,
-                                                        String sortByName, String sortByDate);
+    List<GiftCertificateDto> getGiftCertificates(Set<String> tagsName, String giftCertificateName, String description,
+                                                 String sortByName, String sortByDate);
 
     /**
      * This method return gift certificate by his id.

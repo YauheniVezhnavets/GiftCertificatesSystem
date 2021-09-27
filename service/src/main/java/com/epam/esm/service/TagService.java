@@ -24,7 +24,7 @@ public interface TagService <T extends Tag> {
      *
      * @return list of{@link Tag}
      */
-    List<Tag> getTags();
+    List<Tag> findTags(int currentPage);
 
 
     /**
@@ -33,7 +33,7 @@ public interface TagService <T extends Tag> {
      * @return {@link Tag}
      * @throws  {@link ResourceNotFoundException} in case if tag not found with searched id.
      */
-    Tag getTag(long tagId) throws ResourceNotFoundException;
+    Tag findTag(long tagId) throws ResourceNotFoundException;
 
 
     /**

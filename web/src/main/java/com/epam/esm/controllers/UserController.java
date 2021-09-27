@@ -48,13 +48,13 @@ public class UserController {
      *
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of {@link User} users.
      */
-    @GetMapping(produces = JSON)
-    public ResponseEntity<List<User>> getUsers() {
+    @GetMapping(produces = JSON, params = {"page"})
+    public ResponseEntity<List<User>> getUsers( @RequestParam(defaultValue = "1") @Min(1) int page) {
 
-        List<User> listOfUsers = userService.findUsers();
+        List<User> listOfUsers = userService.findUsers(page);
         listOfUsers.stream().forEach(
                 user -> user.add(
-                        linkTo(methodOn(UserController.class).getUsers()).withRel("getUsers"),
+                        linkTo(methodOn(UserController.class).getUsers(page)).withRel("getUsers"),
                         linkTo(methodOn(UserController.class).getUser(user.getUserId())).withSelfRel()
                 )
         );
@@ -74,7 +74,6 @@ public class UserController {
     public ResponseEntity<User> getUser(@PathVariable(USER_ID) long id) throws ResourceNotFoundException {
         User user = userService.findUser(id);
         user.add(
-                linkTo(methodOn(UserController.class).getUsers()).withRel("getUsers"),
                 linkTo(methodOn(UserController.class).getUser(id)).withSelfRel()
         );
         return new ResponseEntity<>(user, HttpStatus.OK);
@@ -82,8 +81,9 @@ public class UserController {
 
 
     @GetMapping(value = "/{userId}/orders", produces = JSON)
-    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable(USER_ID) long id) throws ResourceNotFoundException {
-        List <OrderDto> orders = orderService.findOrders(id);
+    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable(USER_ID) long id,
+                                                    @RequestParam @Min(1) int page) throws ResourceNotFoundException {
+        List <OrderDto> orders = orderService.findOrders(page,id);
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 

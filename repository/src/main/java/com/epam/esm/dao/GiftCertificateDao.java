@@ -3,13 +3,16 @@ package com.epam.esm.dao;
 
 import com.epam.esm.constructor.QueryConstructor;
 import com.epam.esm.entities.GiftCertificate;
+import com.epam.esm.utils.Paginator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class GiftCertificateDao implements EntityDao<GiftCertificate> {
@@ -19,6 +22,9 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
 
     @PersistenceContext
     protected EntityManager entityManager;
+
+    @Autowired
+    private Paginator paginator;
 
     @Autowired
     public GiftCertificateDao(QueryConstructor queryConstructor) {
@@ -37,10 +43,8 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
         return Optional.ofNullable(entityManager.find(GiftCertificate.class, id));
     }
 
-    public List<GiftCertificate> getGiftCertificates(String tagName, String giftCertificateName,
-                                                     String description, String sortByName, String sortByDate) {
-        String queryWithCondition = queryConstructor.constructQuery(tagName, giftCertificateName, description,
-                sortByName, sortByDate);
+    public List<GiftCertificate> getGiftCertificates(Map <String,String> mapWithParameters, Set<String> tagsName) {
+        String queryWithCondition = queryConstructor.constructQuery(mapWithParameters,tagsName);
         return entityManager.createNativeQuery(queryWithCondition, GiftCertificate.class).getResultList();
     }
 

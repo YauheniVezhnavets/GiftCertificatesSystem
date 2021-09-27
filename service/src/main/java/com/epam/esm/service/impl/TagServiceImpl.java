@@ -25,12 +25,12 @@ public class TagServiceImpl implements TagService<Tag> {
     }
 
     @Override
-    public List<Tag> getTags() {
-        return tagDao.findAll();
+    public List<Tag> findTags(int currentPage) {
+        return tagDao.findAll(currentPage);
     }
 
     @Override
-    public Tag getTag(long id) throws ResourceNotFoundException {
+    public Tag findTag(long id) throws ResourceNotFoundException {
         return tagDao.findById(id).orElseThrow((() -> new ResourceNotFoundException(id)));
     }
 

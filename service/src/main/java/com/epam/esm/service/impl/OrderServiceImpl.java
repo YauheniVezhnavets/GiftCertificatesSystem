@@ -61,11 +61,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public List<OrderDto> findOrders(long userId) {
+    public List<OrderDto> findOrders(int currentPage, long userId) {
         if (userDao.findById(userId).isEmpty()) {
             throw new ResourceNotFoundException(userId);
         }
-        List <Order> orders = orderDao.findAllOrders(userId);
+        List <Order> orders = orderDao.findAllOrders(currentPage,userId);
         return orders.stream().map(orderMapper::mapToDto).collect(Collectors.toList());
     }
 

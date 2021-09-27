@@ -2,11 +2,17 @@ package com.epam.esm.dao;
 
 
 import com.epam.esm.entities.Tag;
+import com.epam.esm.utils.Paginator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.*;
 
 
@@ -20,6 +26,9 @@ public class TagDao implements EntityDao<Tag> {
 
     @PersistenceContext
     protected EntityManager entityManager;
+
+    @Autowired
+    Paginator paginator;
 
 
     @Override
@@ -49,8 +58,16 @@ public class TagDao implements EntityDao<Tag> {
 
     }
 
-    public List<Tag> findAll() {
-        return entityManager.createQuery(FIND_ALL,Tag.class).getResultList();
+    public List<Tag> findAll(int currentPage) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery <Tag> criteria = criteriaBuilder.createQuery(Tag.class);
+        Root <Tag> root = criteria.from(Tag.class);
+        CriteriaQuery<Tag> findAllQuery = criteria.select(root);
+        TypedQuery<Tag> typedQuery = entityManager.createQuery(findAllQuery);
+        paginator.paginateQuery(currentPage,typedQuery);
+
+
+        return typedQuery.getResultList();
     }
 
 

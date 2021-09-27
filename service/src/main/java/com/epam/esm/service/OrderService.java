@@ -9,7 +9,7 @@ public interface OrderService <T extends Order> {
 
     void createOrder (long userId, long giftCertificateId);
 
-    List<OrderDto> findOrders (long userId);
+    List<OrderDto> findOrders (int currentPage, long userId);
 
     OrderDto findOrder(long userId, long orderId);
 

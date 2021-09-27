@@ -18,6 +18,7 @@ import org.springframework.hateoas.Link;
 
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -44,13 +45,13 @@ public class TagController {
      *
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of {@link Tag} tags.
      */
-    @GetMapping (produces = JSON)
-    public ResponseEntity<List<Tag>> getTags() {
+    @GetMapping (produces = JSON, params = {"page"})
+    public ResponseEntity<List<Tag>> getTags(@RequestParam(defaultValue = "1") @Min(1) int page) {
 
-        List<Tag> listOfTags = tagService.getTags();
+        List<Tag> listOfTags = tagService.findTags(page);
         listOfTags.stream().forEach(
                 tag -> tag.add(
-                        linkTo(methodOn(TagController.class).getTags()).withRel("getTags"),
+                        linkTo(methodOn(TagController.class).getTags(page)).withRel("getTags"),
                         linkTo(methodOn(TagController.class).getTag(tag.getTagId())).withSelfRel(),
                         linkTo(methodOn(TagController.class).deleteTag(tag.getTagId())).withRel("deleteTag")
                 )
@@ -68,9 +69,8 @@ public class TagController {
      */
     @GetMapping(value = "/{id}", produces = JSON)
     public ResponseEntity<Tag> getTag(@PathVariable(ID) long id) throws ResourceNotFoundException {
-        Tag tag = tagService.getTag(id);
+        Tag tag = tagService.findTag(id);
         tag.add(
-                linkTo(methodOn(TagController.class).getTags()).withRel("getTags"),
                 linkTo(methodOn(TagController.class).getTag(id)).withSelfRel(),
                 linkTo(methodOn(TagController.class).deleteTag(id)).withRel("deleteTag")
         );

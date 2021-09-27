@@ -1,11 +1,16 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.entities.Order;
 import com.epam.esm.entities.User;
+import com.epam.esm.utils.Paginator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +23,9 @@ public class UserDao implements EntityDao<User>{
     @PersistenceContext
     protected EntityManager entityManager;
 
+    @Autowired
+    Paginator paginator;
+
 
     @Override
     public Optional<User> findById(long id) {
@@ -25,8 +33,15 @@ public class UserDao implements EntityDao<User>{
     }
 
 
-    public List <User> findAll() {
-        return entityManager.createQuery(FIND_ALL, User.class).getResultList();
+    public List <User> findAll(int currentPage) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+        Root<User> root = criteria.from(User.class);
+        CriteriaQuery<User> findAllQuery = criteria.select(root);
+        TypedQuery<User> typedQuery = entityManager.createQuery(findAllQuery);
+        paginator.paginateQuery(currentPage,typedQuery);
+
+        return typedQuery.getResultList();
     }
 
 
