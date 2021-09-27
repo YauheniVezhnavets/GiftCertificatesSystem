@@ -22,6 +22,8 @@ public class Tag extends RepresentationModel<Tag> implements Identifiable {
     @Column(name = "name", unique = true)
     private String name;
 
+//    @ManyToMany(mappedBy = "tags")
+//    Set<GiftCertificate> suppliers = new HashSet<GiftCertificate>();
 
     public Tag() {
 

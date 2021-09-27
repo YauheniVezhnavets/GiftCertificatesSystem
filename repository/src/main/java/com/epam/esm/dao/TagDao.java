@@ -50,7 +50,6 @@ public class TagDao implements EntityDao<Tag> {
     }
 
     public List<Tag> findAll() {
-
         return entityManager.createQuery(FIND_ALL,Tag.class).getResultList();
     }
 

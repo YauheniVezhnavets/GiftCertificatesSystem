@@ -21,7 +21,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
 
     private final GiftCertificateDao giftCertificateDao;
     private final TagDao tagDao;
-    private final GiftCertificateDtoMapper giftCertificateDtoWrapper;
+    private final GiftCertificateDtoMapper giftCertificateDtoMapper;
 
 
     @Autowired
@@ -29,7 +29,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
                                       GiftCertificateDtoMapper giftCertificateDtoMapper) {
         this.giftCertificateDao = giftCertificateDao;
         this.tagDao = tagDao;
-        this.giftCertificateDtoWrapper = giftCertificateDtoMapper;
+        this.giftCertificateDtoMapper = giftCertificateDtoMapper;
     }
 
 
@@ -40,7 +40,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         List<GiftCertificate> sortedGiftCertificates = giftCertificateDao.getGiftCertificates(tagName,
                 giftCertificateName, description, sortByName, sortByDate);
 
-        return sortedGiftCertificates.stream().distinct().map(giftCertificateDtoWrapper::map).collect(Collectors.toList());
+        return sortedGiftCertificates.stream().distinct().map(giftCertificateDtoMapper::mapToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -49,15 +49,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         GiftCertificate giftCertificate = giftCertificateDao.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException(id));
 
-        return giftCertificateDtoWrapper.map(giftCertificate);
+        return giftCertificateDtoMapper.mapToDto(giftCertificate);
     }
 
 
     @Override
     @Transactional
-    public void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws InvalidFieldException
-    {
-        GiftCertificate giftCertificate = giftCertificateDtoWrapper.mapToDto(giftCertificateDto);
+    public void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws InvalidFieldException {
+        GiftCertificate giftCertificate = giftCertificateDtoMapper.map(giftCertificateDto);
 
         Set<Tag> tags = createCertificateTagRelation(giftCertificate);
         giftCertificate.setTags(tags);
@@ -82,7 +81,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         GiftCertificate currentGiftCertificate = giftCertificateDao.findById(id).
                 orElseThrow((() -> new ResourceNotFoundException(id)));
 
-        GiftCertificate updatedGiftCertificate = giftCertificateDtoWrapper.mapToDto(giftCertificateDto);
+        GiftCertificate updatedGiftCertificate = giftCertificateDtoMapper.map(giftCertificateDto);
+        System.out.println(updatedGiftCertificate);
 
         updateFieldsInGiftCertificate(currentGiftCertificate, updatedGiftCertificate);
 

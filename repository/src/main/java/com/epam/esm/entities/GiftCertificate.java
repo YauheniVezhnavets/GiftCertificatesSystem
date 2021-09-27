@@ -34,7 +34,6 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     private BigDecimal price;
 
     @Min(1)
-    @NotNull
     @Column(name = "duration")
     private int duration;
 
@@ -51,6 +50,10 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
     )
     private Set<Tag> tags;
+
+
+    @OneToMany(mappedBy = "certificate")
+    private Set<Order> orders;
 
     public GiftCertificate() {
 

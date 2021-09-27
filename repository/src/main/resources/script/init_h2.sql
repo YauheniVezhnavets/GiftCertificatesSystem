@@ -26,3 +26,23 @@ CREATE TABLE gift_certificate_tag(
 	CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) references tag(id)on delete cascade
 
 );
+
+CREATE TABLE if not exists users (
+	id bigserial,
+	first_name VARCHAR(50)     NOT NULL ,
+	last_name  VARCHAR(50)     NOT NULL ,
+	email VARCHAR(50)          NOT NULL ,
+	password VARCHAR(50)       NOT NULL ,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE if not exists orders (
+	id bigserial,
+	cost numeric (10,2)            NOT NULL,
+	purchase_date       timestamp   NOT NULL,
+	PRIMARY KEY (id),
+	user_id integer not null,
+    certificate_id integer not null,
+    foreign key(user_id) references users(id),
+    foreign key(certificate_id) references gift_certificate(id)
+);
