@@ -2,7 +2,6 @@ package com.epam.esm.service;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.entities.GiftCertificate;
-import com.epam.esm.entities.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceNotFoundException;
 
@@ -24,7 +23,7 @@ public interface GiftCertificateService <T extends GiftCertificate> {
      * This method return existing gift certificates with criteria.
      * @return list of{@link GiftCertificateDto}
      */
-    List<GiftCertificateDto> getGiftCertificates(Set<String> tagsName, String giftCertificateName, String description,
+    List<GiftCertificateDto> findGiftCertificates(Set<String> tagsName, String giftCertificateName, String description,
                                                  String sortByName, String sortByDate, int currentPage);
 
     /**
@@ -33,7 +32,7 @@ public interface GiftCertificateService <T extends GiftCertificate> {
      * @return {@link GiftCertificateDto}
      * @throws  {@link ResourceNotFoundException} in case if tag not found with searched id.
      */
-    GiftCertificateDto getGiftCertificate(long id) throws ResourceNotFoundException;
+    GiftCertificateDto findGiftCertificate(long id) throws ResourceNotFoundException;
 
 
     /**

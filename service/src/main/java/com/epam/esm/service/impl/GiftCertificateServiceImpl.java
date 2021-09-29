@@ -34,7 +34,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
 
 
     @Override
-    public List<GiftCertificateDto> getGiftCertificates(Set <String> tagsName, String giftCertificateName, String description,
+    public List<GiftCertificateDto> findGiftCertificates(Set <String> tagsName, String giftCertificateName, String description,
                                                         String sortByName, String sortByDate, int currentPage) {
         Map <String,String> mapWithParameters = new HashMap<>();
 
@@ -44,14 +44,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         mapWithParameters.put("sortByDate", sortByDate);
 
 
-        List<GiftCertificate> sortedGiftCertificates = giftCertificateDao.getGiftCertificates(mapWithParameters,
+        List<GiftCertificate> sortedGiftCertificates = giftCertificateDao.findGiftCertificates(mapWithParameters,
                 tagsName, currentPage);
 
         return sortedGiftCertificates.stream().distinct().map(giftCertificateDtoMapper::mapToDto).collect(Collectors.toList());
     }
 
     @Override
-    public GiftCertificateDto getGiftCertificate(long id) throws ResourceNotFoundException {
+    public GiftCertificateDto findGiftCertificate(long id) throws ResourceNotFoundException {
 
         GiftCertificate giftCertificate = giftCertificateDao.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException(id));
@@ -92,7 +92,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
                 orElseThrow((() -> new ResourceNotFoundException(id)));
 
         GiftCertificate updatedGiftCertificate = giftCertificateDtoMapper.map(giftCertificateDto);
-        System.out.println(updatedGiftCertificate);
 
         updateFieldsInGiftCertificate(currentGiftCertificate, updatedGiftCertificate);
 

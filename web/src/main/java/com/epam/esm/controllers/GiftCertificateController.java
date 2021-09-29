@@ -61,7 +61,7 @@ public class GiftCertificateController {
             @RequestParam(required = false) String sortByName,
             @RequestParam (required = false) String sortByDate,
             @RequestParam(defaultValue = "1") @Min(1) int page) {
-        return new ResponseEntity<>(giftCertificateService.getGiftCertificates(tagsName,giftCertificateName,
+        return new ResponseEntity<>(giftCertificateService.findGiftCertificates(tagsName,giftCertificateName,
                 description,sortByName,sortByDate,page), HttpStatus.OK);
     }
 
@@ -76,7 +76,7 @@ public class GiftCertificateController {
     @GetMapping(value = "/{id}", produces = JSON)
     public ResponseEntity<GiftCertificateDto> getGiftCertificate(@PathVariable(ID) long id)
             throws ResourceNotFoundException {
-        return new ResponseEntity<>(giftCertificateService.getGiftCertificate(id), HttpStatus.OK);
+        return new ResponseEntity<>(giftCertificateService.findGiftCertificate(id), HttpStatus.OK);
     }
 
     /**

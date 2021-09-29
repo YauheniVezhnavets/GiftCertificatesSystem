@@ -5,12 +5,37 @@ import com.epam.esm.entities.Order;
 
 import java.util.List;
 
+/**
+ * This interface represents Service implementation that connected controller with Data Access Object.
+ *
+ * @author Yauheni Vezhnavets
+ * @param <T> has to implement {@link Order} interface
+ * @see Order
+ */
 public interface OrderService <T extends Order> {
+
+    /**
+     * This method create new order.
+     *
+     *
+     */
 
     void createOrder (long userId, long giftCertificateId);
 
+
+    /**
+     * This method return existing orders connected with user.
+     * @return list of{@link OrderDto}
+     */
     List<OrderDto> findOrders (int currentPage, long userId);
 
+
+    /**
+     * This method return order by his id and user id.
+     *
+     * @return {@link Order}
+     *
+     */
     OrderDto findOrder(long userId, long orderId);
 
 }
