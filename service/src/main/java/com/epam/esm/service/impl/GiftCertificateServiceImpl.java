@@ -65,6 +65,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
     public void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws InvalidFieldException {
         GiftCertificate giftCertificate = giftCertificateDtoMapper.map(giftCertificateDto);
 
+        if(giftCertificate.getTags().isEmpty()){
+            throw new InvalidFieldException();
+        }
         Set<Tag> tags = createCertificateTagRelation(giftCertificate);
         giftCertificate.setTags(tags);
 

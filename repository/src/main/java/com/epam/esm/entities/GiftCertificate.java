@@ -49,6 +49,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
             joinColumns = @JoinColumn(name = "gift_certificate_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
     )
+    @NotNull
     private Set<Tag> tags;
 
 
