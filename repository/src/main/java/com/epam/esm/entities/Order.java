@@ -1,6 +1,6 @@
 package com.epam.esm.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;

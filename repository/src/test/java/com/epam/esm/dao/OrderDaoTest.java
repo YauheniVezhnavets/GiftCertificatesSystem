@@ -1,11 +1,7 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.config.EntityManagerFactoryConfig;
-import com.epam.esm.constructor.QueryConstructor;
-import com.epam.esm.entities.GiftCertificate;
 import com.epam.esm.entities.Order;
-import com.epam.esm.entities.Tag;
-import com.epam.esm.entities.User;
 import com.epam.esm.utils.Paginator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.UserDao;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.impl.TagServiceImpl;
@@ -31,6 +32,9 @@ public class TagServiceImplTest {
 
     @Mock
     private TagDao tagDao;
+
+    @Mock
+    private UserDao userDao;
 
     @InjectMocks
     private TagServiceImpl tagServiceImpl;

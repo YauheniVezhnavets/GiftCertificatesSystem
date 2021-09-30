@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.UserDao;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceDuplicateException;
@@ -18,10 +19,13 @@ import java.util.Optional;
 public class TagServiceImpl implements TagService<Tag> {
 
     private final TagDao tagDao;
+    private final UserDao userDao;
 
     @Autowired
-    public TagServiceImpl(TagDao tagDao) {
+    public TagServiceImpl(TagDao tagDao, UserDao userDao) {
+
         this.tagDao = tagDao;
+        this.userDao = userDao;
     }
 
     @Override
@@ -57,6 +61,10 @@ public class TagServiceImpl implements TagService<Tag> {
 
     @Override
     public Tag findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) throws ResourceNotFoundException {
+
+        if (userDao.findById(userId).isEmpty()){
+            throw new ResourceNotFoundException(userId);
+        }
 
         Optional <Tag> optionalTag = tagDao.findMostUsedTagOfUserWithHighestCostOfAllOrders(userId);
         if (optionalTag.isEmpty()){

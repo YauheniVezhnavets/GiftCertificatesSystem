@@ -9,12 +9,12 @@ import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import org.springframework.hateoas.Link;
 
 
 import javax.validation.Valid;
@@ -87,7 +87,10 @@ public class TagController {
      */
 
     @PostMapping(consumes = JSON)
-    public ResponseEntity createTag(@Valid @RequestBody Tag tag) throws InvalidFieldException, ResourceDuplicateException {
+    public ResponseEntity createTag(@Valid @RequestBody Tag tag, BindingResult bindingResult) throws InvalidFieldException, ResourceDuplicateException {
+        if (bindingResult.hasErrors()){
+            throw new InvalidFieldException();
+        }
         tagService.createTag(tag);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

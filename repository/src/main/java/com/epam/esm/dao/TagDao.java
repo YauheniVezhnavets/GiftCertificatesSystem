@@ -1,8 +1,6 @@
 package com.epam.esm.dao;
 
 
-import com.epam.esm.entities.GiftCertificate;
-import com.epam.esm.entities.Order;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.utils.Paginator;
 import org.springframework.beans.factory.annotation.Autowired;

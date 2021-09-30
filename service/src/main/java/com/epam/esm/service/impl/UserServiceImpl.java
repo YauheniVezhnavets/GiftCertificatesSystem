@@ -3,13 +3,12 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.UserDao;
 import com.epam.esm.entities.User;
 import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.mapper.GiftCertificateDtoMapper;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 public class UserServiceImpl implements UserService <User> {

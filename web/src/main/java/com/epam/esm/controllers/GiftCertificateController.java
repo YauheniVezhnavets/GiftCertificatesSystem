@@ -10,7 +10,7 @@ import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -90,8 +90,13 @@ public class GiftCertificateController {
      */
 
     @PostMapping(consumes = JSON)
-    public ResponseEntity createGiftCertificate(@Valid @RequestBody GiftCertificateDto giftCertificateDto)
+    public ResponseEntity createGiftCertificate(@Valid @RequestBody GiftCertificateDto giftCertificateDto,
+                                                BindingResult bindingResult)
             throws InvalidFieldException {
+        if(bindingResult.hasErrors()){
+            throw new InvalidFieldException();
+        }
+
         giftCertificateService.createGiftCertificate(giftCertificateDto);
         return new ResponseEntity(HttpStatus.CREATED);
     }
