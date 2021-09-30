@@ -2,10 +2,13 @@ package com.epam.esm.controllers;
 
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.entities.Order;
+import com.epam.esm.entities.Tag;
 import com.epam.esm.entities.User;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.OrderService;
+import com.epam.esm.service.TagService;
 import com.epam.esm.service.UserService;
+import com.epam.esm.service.impl.TagServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,16 +33,17 @@ public class UserController {
     private static final String JSON = "application/json";
     private static final String USER_ID = "userId";
     private static final String GIFT_CERTIFICATE_ID = "certificateId";
-    private static final String ORDER_ID = "orderId";
 
     private final UserService<User> userService;
     private final OrderService <Order> orderService;
+    private final TagService<Tag> tagService;
 
     @Autowired
-    public UserController(UserService<User> userService, OrderService<Order> orderService) {
+    public UserController(UserService<User> userService, OrderService<Order> orderService, TagService <Tag> tagService) {
 
         this.userService = userService;
         this.orderService = orderService;
+        this.tagService = tagService;
     }
 
     /**
@@ -101,5 +105,12 @@ public class UserController {
                                        @PathVariable (GIFT_CERTIFICATE_ID) long giftCertificateId){
         orderService.createOrder(userId,giftCertificateId);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{userId}/orders/tags/popular")
+    public ResponseEntity <Tag> findMostUsedTagOfUserWithHighestCostOfAllOrders(@PathVariable (USER_ID) long userId) {
+        Tag tag = tagService.findMostUsedTagOfUserWithHighestCostOfAllOrders(userId);
+
+        return new ResponseEntity<>(tag, HttpStatus.OK);
     }
 }

@@ -54,4 +54,14 @@ public class TagServiceImpl implements TagService<Tag> {
         }
         tagDao.delete(id);
     }
+
+    @Override
+    public Tag findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) throws ResourceNotFoundException {
+
+        Optional <Tag> optionalTag = tagDao.findMostUsedTagOfUserWithHighestCostOfAllOrders(userId);
+        if (optionalTag.isEmpty()){
+            throw new ResourceNotFoundException(userId);
+        }
+        return optionalTag.get();
+    }
 }

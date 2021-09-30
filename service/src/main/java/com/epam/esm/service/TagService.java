@@ -52,4 +52,11 @@ public interface TagService <T extends Tag> {
      */
     void deleteTag(long id) throws ResourceNotFoundException;
 
+
+    /**
+     * This method return most popular tag .
+     *
+     * @throws {@link ResourceNotFoundException} in case if this tag's id not found.
+     */
+    Tag findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) throws ResourceNotFoundException;
 }

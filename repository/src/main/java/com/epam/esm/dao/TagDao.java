@@ -1,6 +1,8 @@
 package com.epam.esm.dao;
 
 
+import com.epam.esm.entities.GiftCertificate;
+import com.epam.esm.entities.Order;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.utils.Paginator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,15 @@ import java.util.*;
 public class TagDao implements EntityDao<Tag> {
 
 
-    private static final String FIND_ALL = "SELECT t FROM Tag t ";
+
     private static final String FIND_TAG_BY_TAG_NAME = "SELECT t FROM Tag t WHERE t.name = :name";
     private static final String TAG_NAME = "name";
+    private static final String FIND_MOST_POPULAR_TAG = "select t.id as id, t.name as name from user_order uo " +
+            "inner join gift_certificate gc\n" +
+            "on uo.certificate_id=gc.id inner join gift_certificate_tag gct on\n" +
+            "gc.id=gct.gift_certificate_id inner join tag t on gct.tag_id=t.id \n" +
+            "where uo.user_id=(:userId) group by t.id,t.name order by sum(cost) desc limit 1;";
+
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -79,4 +87,11 @@ public class TagDao implements EntityDao<Tag> {
             entityManager.remove(tag);
         }
     }
+
+    public Optional<Tag> findMostUsedTagOfUserWithHighestCostOfAllOrders (long userId){
+       Tag tag = (Tag) entityManager.createNativeQuery(FIND_MOST_POPULAR_TAG,Tag.class)
+               .setParameter("userId",userId).getSingleResult();
+       return Optional.of(tag);
+    }
 }
+
