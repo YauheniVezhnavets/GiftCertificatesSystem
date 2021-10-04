@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,8 +63,16 @@ public class GiftCertificateController {
             @RequestParam(required = false) String sortByName,
             @RequestParam (required = false) String sortByDate,
             @RequestParam(defaultValue = "1") @Min(1) int page) {
-        return new ResponseEntity<>(giftCertificateService.findGiftCertificates(tagsName,giftCertificateName,
-                description,sortByName,sortByDate,page), HttpStatus.OK);
+
+        Map<String, String> mapWithParameters = new HashMap<>();
+
+        mapWithParameters.put("giftCertificateName", giftCertificateName);
+        mapWithParameters.put("description", description);
+        mapWithParameters.put("sortByName", sortByName);
+        mapWithParameters.put("sortByDate", sortByDate);
+
+        return new ResponseEntity<>(giftCertificateService.findGiftCertificates(tagsName,mapWithParameters,page),
+                HttpStatus.OK);
     }
 
     /**

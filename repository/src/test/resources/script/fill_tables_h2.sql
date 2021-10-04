@@ -28,6 +28,14 @@ insert into tag(name)
 values ('Coffee');
 insert into tag(name)
 values ('Sport');
+insert into tag(name)
+values ('Run');
+insert into tag(name)
+values ('Test');
+insert into tag(name)
+values ('Football');
+insert into tag(name)
+values ('Hockey');
 
 
 insert into gift_certificate_tag (gift_certificate_id, tag_id)

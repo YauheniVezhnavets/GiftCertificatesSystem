@@ -34,7 +34,6 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
     @Override
     public long create(GiftCertificate giftCertificate) {
         entityManager.persist(giftCertificate);
-        entityManager.flush();
         return giftCertificate.getCertificateId();
     }
 
@@ -44,21 +43,17 @@ public class GiftCertificateDao implements EntityDao<GiftCertificate> {
     }
 
     public List<GiftCertificate> findGiftCertificates(Map<String, String> mapWithParameters,
-                                                     Set<String> tagsName, int currentPage) {
+                                                      Set<String> tagsName, int currentPage) {
         String queryWithCondition = queryConstructor.constructQuery(mapWithParameters, tagsName, currentPage);
         return entityManager.createNativeQuery(queryWithCondition, GiftCertificate.class).getResultList();
     }
 
     @Override
-    public void delete(long id) {
-        GiftCertificate giftCertificate = entityManager.find(GiftCertificate.class, id);
-        if (giftCertificate != null) {
-            entityManager.remove(giftCertificate);
-        }
+    public void delete(GiftCertificate giftCertificate) {
+        entityManager.remove(giftCertificate);
     }
 
     public void update(GiftCertificate giftCertificate) {
         entityManager.merge(giftCertificate);
-        entityManager.flush();
     }
 }

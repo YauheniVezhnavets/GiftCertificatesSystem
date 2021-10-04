@@ -75,8 +75,9 @@ public class OrderServiceImplTest {
     public void methodShouldReturnListOfOrders() {
 
         when(orderDao.findAllOrders(1,1L)).thenReturn(new ArrayList<>());
+        when(userDao.findById(anyLong())).thenReturn(optionalUser);
 
-        List<Order> orders = orderDao.findAllOrders(1,1);
+        List<OrderDto> orders = orderServiceImpl.findOrders(1,1);
 
         assertNotNull(orders);
     }
@@ -107,4 +108,17 @@ public class OrderServiceImplTest {
 
         verify(orderDao, times(1)).create(any());
     }
+
+    @Test
+    public void methodShouldDeleteOrder() throws ResourceNotFoundException {
+
+        when(orderDao.findById(anyLong())).thenReturn(optionalOrder);
+        doNothing().when(orderDao).delete(optionalOrder.get());
+
+        orderServiceImpl.deleteOrder(1L);
+
+        verify(orderDao, times(1)).delete(optionalOrder.get());
+
+    }
+
 }

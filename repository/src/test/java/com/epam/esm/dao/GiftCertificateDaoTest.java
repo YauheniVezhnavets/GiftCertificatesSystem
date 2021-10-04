@@ -68,9 +68,9 @@ public class GiftCertificateDaoTest {
 
     @Test
     public void deleteTagTest() {
-        Optional<GiftCertificate> createdTag = giftCertificateDao.findById(6L);
-        giftCertificateDao.delete(6L);
-        Optional<GiftCertificate> emptyTag = giftCertificateDao.findById(6L);
-        assertNotEquals(createdTag, emptyTag);
+        Optional<GiftCertificate> createdGiftCertificate = giftCertificateDao.findById(6L);
+        giftCertificateDao.delete(createdGiftCertificate.get());
+        Optional<GiftCertificate> emptyGiftCertificate = giftCertificateDao.findById(6L);
+        assertNotEquals(createdGiftCertificate, emptyGiftCertificate);
     }
 }

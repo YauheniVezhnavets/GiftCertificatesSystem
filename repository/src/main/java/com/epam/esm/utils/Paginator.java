@@ -7,7 +7,7 @@ import javax.persistence.TypedQuery;
 @Component
 public class Paginator {
 
-    private final static int resultPerPage = 5;
+    private final static int resultPerPage = 10;
 
     private Paginator() {
     }

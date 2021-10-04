@@ -34,7 +34,12 @@ public class TagDaoTest {
             new Tag (2L,"Music"),
             new Tag (3L,"Movie"),
             new Tag (4L,"Shopping"),
-            new Tag (5L,"Coffee"));
+            new Tag (5L,"Coffee"),
+            new Tag (6L,"Sport"),
+            new Tag (7L,"Run"),
+            new Tag (8L,"Test"),
+            new Tag (9L,"Football"),
+            new Tag (10L,"Hockey"));
 
     @Autowired
     private TagDao tagDao;
@@ -62,7 +67,7 @@ public class TagDaoTest {
 
     @Test
     public void createTagTest() {
-        long expected = 7;
+        long expected = 11;
         long actual = tagDao.create(new Tag("Run"));
         assertEquals(expected, actual);
     }
@@ -70,7 +75,7 @@ public class TagDaoTest {
     @Test
     public void deleteTagTest() {
         Optional <Tag> createdTag = tagDao.findById(6L);
-        tagDao.delete(6L);
+        tagDao.delete(createdTag.get());
         Optional <Tag> emptyTag = tagDao.findById(6L);
         assertNotEquals(createdTag,emptyTag);
     }

@@ -56,22 +56,30 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public List<OrderDto> findOrders(int currentPage, long userId) {
         if (userDao.findById(userId).isEmpty()) {
             throw new ResourceNotFoundException(userId);
         }
-        List <Order> orders = orderDao.findAllOrders(currentPage,userId);
+        List<Order> orders = orderDao.findAllOrders(currentPage, userId);
         return orders.stream().map(orderMapper::mapToDto).collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
     public OrderDto findOrder(long userId, long orderId) {
         if (userDao.findById(userId).isEmpty()) {
             throw new ResourceNotFoundException(userId);
         }
-        Order order = orderDao.findOrder(userId,orderId);
+        Order order = orderDao.findOrder(userId, orderId);
         return orderMapper.mapToDto(order);
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrder(long id) throws ResourceNotFoundException {
+        if (orderDao.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException(id);
+        }
+        Order order = orderDao.findById(id).get();
+        orderDao.delete(order);
     }
 }

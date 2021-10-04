@@ -2,6 +2,8 @@ package com.epam.esm.service;
 
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.entities.Order;
+import com.epam.esm.exception.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,4 +40,14 @@ public interface OrderService <T extends Order> {
      */
     OrderDto findOrder(long userId, long orderId);
 
+
+
+    /**
+     * This method delete order by his id.
+     *
+     * @return {@link Order}
+     *
+     */
+
+   void deleteOrder(long id);
 }

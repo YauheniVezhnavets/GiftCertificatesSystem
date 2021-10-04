@@ -33,7 +33,6 @@ public class OrderDao implements EntityDao<Order> {
     @Override
     public long create(Order order) {
         entityManager.persist(order);
-        entityManager.flush();
         return order.getOrderId();
     }
 
@@ -42,12 +41,9 @@ public class OrderDao implements EntityDao<Order> {
         return Optional.ofNullable(entityManager.find(Order.class, id));
     }
 
-    @Override
-    public void delete(long id) {
-        Order order = entityManager.find(Order.class, id);
-        if (order != null) {
-            entityManager.remove(order);
-        }
+
+    public void delete(Order order) {
+        entityManager.remove(order);
     }
 
     public List<Order> findAllOrders(int currentPage, long userId) {
@@ -59,18 +55,18 @@ public class OrderDao implements EntityDao<Order> {
         Root<Order> root = criteria.from(Order.class);
         CriteriaQuery<Order> findAllQuery = criteria.where(criteriaBuilder.equal(root.get(USER), user));
         TypedQuery<Order> typedQuery = entityManager.createQuery(findAllQuery);
-        paginator.paginateQuery(currentPage,typedQuery);
+        paginator.paginateQuery(currentPage, typedQuery);
 
         return typedQuery.getResultList();
 
     }
 
-    public Order findOrder(long userId, long orderId){
+    public Order findOrder(long userId, long orderId) {
 
-        User user = entityManager.find(User.class,userId);
+        User user = entityManager.find(User.class, userId);
 
-        Optional <Order> optionalOrder = Optional.ofNullable(entityManager.createQuery(FIND_ORDER_BY_ID,Order.class)
-                .setParameter(ID,orderId)
+        Optional<Order> optionalOrder = Optional.ofNullable(entityManager.createQuery(FIND_ORDER_BY_ID, Order.class)
+                .setParameter(ID, orderId)
                 .setParameter(USER, user)
                 .getSingleResult());
 

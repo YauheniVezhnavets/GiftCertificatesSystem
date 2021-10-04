@@ -20,7 +20,6 @@ import java.util.*;
 public class TagDao implements EntityDao<Tag> {
 
 
-
     private static final String FIND_TAG_BY_TAG_NAME = "SELECT t FROM Tag t WHERE t.name = :name";
     private static final String TAG_NAME = "name";
     private static final String FIND_MOST_POPULAR_TAG = "select t.id as id, t.name as name from user_order uo " +
@@ -40,7 +39,6 @@ public class TagDao implements EntityDao<Tag> {
     @Override
     public long create(Tag tag) {
         entityManager.persist(tag);
-        entityManager.flush();
         return tag.getTagId();
     }
 
@@ -66,30 +64,27 @@ public class TagDao implements EntityDao<Tag> {
 
     public List<Tag> findAll(int currentPage) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery <Tag> criteria = criteriaBuilder.createQuery(Tag.class);
-        Root <Tag> root = criteria.from(Tag.class);
+        CriteriaQuery<Tag> criteria = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> root = criteria.from(Tag.class);
         CriteriaQuery<Tag> findAllQuery = criteria.select(root);
         TypedQuery<Tag> typedQuery = entityManager.createQuery(findAllQuery);
-        paginator.paginateQuery(currentPage,typedQuery);
+        paginator.paginateQuery(currentPage, typedQuery);
 
 
         return typedQuery.getResultList();
     }
 
 
-
     @Override
-    public void delete(long id) {
-        Tag tag = entityManager.find(Tag.class, id);
-        if (tag != null) {
-            entityManager.remove(tag);
-        }
+    public void delete(Tag tag) {
+        entityManager.remove(tag);
+
     }
 
-    public Optional<Tag> findMostUsedTagOfUserWithHighestCostOfAllOrders (long userId){
-       Tag tag = (Tag) entityManager.createNativeQuery(FIND_MOST_POPULAR_TAG,Tag.class)
-               .setParameter("userId",userId).getSingleResult();
-       return Optional.of(tag);
+    public Optional<Tag> findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) {
+        Tag tag = (Tag) entityManager.createNativeQuery(FIND_MOST_POPULAR_TAG, Tag.class)
+                .setParameter("userId", userId).getSingleResult();
+        return Optional.of(tag);
     }
 }
 

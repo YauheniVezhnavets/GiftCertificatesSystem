@@ -52,13 +52,15 @@ public class GiftCertificateServiceImplTest {
 
     private GiftCertificate TEST_GIFT_CERTIFICATE = new GiftCertificate(1L,
             "Golden_Coffee", "Taste our best coffee.", new BigDecimal(30.00), 30,
-            LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER), LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER));
+            LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER),
+            LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER));
 
     private Set <Tag> SET_OF_TUGS = Set.of(new Tag(1L,"Relax"), new Tag (2L, "Sport"));
 
     private GiftCertificateDto TEST_GIFT_CERTIFICATE_DTO = new GiftCertificateDto(1L,
             "Golden_Coffee", "Taste our best coffee.", new BigDecimal(30.00), 30,
-            LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER), LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER));
+            LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER),
+            LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER));
 
 
 
@@ -75,26 +77,46 @@ public class GiftCertificateServiceImplTest {
 
 
     @Test
-    public void methodShouldCreateGiftCertificateTest() {
+    public void methodShouldCreateGiftCertificateWithNewTagOfGiftCertificateTest() {
         long id = 7L;
         when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
-        when(giftCertificateDao.create(any())).thenReturn(7L);
+        TEST_GIFT_CERTIFICATE.setTags(SET_OF_TUGS);
+        when(tagDao.findByName(anyString())).thenReturn(Optional.empty());
 
-        giftCertificateDao.create(TEST_GIFT_CERTIFICATE);
+        assertFalse(TEST_GIFT_CERTIFICATE.getTags().isEmpty());
 
-        verify(giftCertificateDao, times(1)).create(any());
+        when(giftCertificateDao.create(TEST_GIFT_CERTIFICATE)).thenReturn(id);
+
+        giftCertificateServiceImpl.createGiftCertificate(TEST_GIFT_CERTIFICATE_DTO);
+
+    }
+
+
+    @Test
+    public void methodShouldCreateGiftCertificateWithExistingTagOfGiftCertificateTest() {
+        long id = 7L;
+        when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
+        TEST_GIFT_CERTIFICATE.setTags(SET_OF_TUGS);
+        when(tagDao.findByName(anyString())).thenReturn(optionalTag);
+
+        assertFalse(TEST_GIFT_CERTIFICATE.getTags().isEmpty());
+
+        when(giftCertificateDao.create(TEST_GIFT_CERTIFICATE)).thenReturn(id);
+
+        giftCertificateServiceImpl.createGiftCertificate(TEST_GIFT_CERTIFICATE_DTO);
+
+        verify(giftCertificateDao, times(1)).create(TEST_GIFT_CERTIFICATE);
 
     }
 
     @Test
     public void methodShouldDeleteGiftCertificate() throws ResourceNotFoundException {
 
-        when(giftCertificateDao.findById(anyLong())).thenReturn(optionalGiftCertificate);
-        doNothing().when(giftCertificateDao).delete(anyLong());
+        doNothing().when(giftCertificateDao).delete(optionalGiftCertificate.get());
 
         giftCertificateServiceImpl.deleteGiftCertificate(1L);
 
-        verify(giftCertificateDao, times(1)).delete(anyLong());
+        verify(giftCertificateDao, times(1)).delete(optionalGiftCertificate.get());
 
     }
 
@@ -123,8 +145,18 @@ public class GiftCertificateServiceImplTest {
         when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
         doNothing().when(giftCertificateDao).update(testGiftCertificate);
 
-        giftCertificateDao.update(TEST_GIFT_CERTIFICATE);
+        giftCertificateServiceImpl.updateGiftCertificate(1L, TEST_GIFT_CERTIFICATE_DTO);
 
         verify(giftCertificateDao, times(1)).update(any());
+    }
+
+    @Test
+    public void methodShouldReturnExceptionWhenIdNotFound()  {
+        when(giftCertificateDao.findById(0L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+
+            giftCertificateServiceImpl.findGiftCertificate(0L);
+        });
     }
 }

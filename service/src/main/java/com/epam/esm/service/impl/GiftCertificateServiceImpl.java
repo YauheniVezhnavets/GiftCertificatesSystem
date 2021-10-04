@@ -34,20 +34,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
 
 
     @Override
-    public List<GiftCertificateDto> findGiftCertificates(Set <String> tagsName, String giftCertificateName, String description,
-                                                        String sortByName, String sortByDate, int currentPage) {
-        Map <String,String> mapWithParameters = new HashMap<>();
-
-        mapWithParameters.put("giftCertificateName", giftCertificateName);
-        mapWithParameters.put("description", description);
-        mapWithParameters.put("sortByName", sortByName);
-        mapWithParameters.put("sortByDate", sortByDate);
+    public List<GiftCertificateDto> findGiftCertificates(Set<String> tagsName, Map<String, String> mapWithParameters,
+                                                         int currentPage) {
 
 
         List<GiftCertificate> sortedGiftCertificates = giftCertificateDao.findGiftCertificates(mapWithParameters,
                 tagsName, currentPage);
 
-        return sortedGiftCertificates.stream().distinct().map(giftCertificateDtoMapper::mapToDto).collect(Collectors.toList());
+        return sortedGiftCertificates.stream().distinct().map(giftCertificateDtoMapper::mapToDto).
+                collect(Collectors.toList());
     }
 
     @Override
@@ -65,7 +60,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
     public void createGiftCertificate(GiftCertificateDto giftCertificateDto) throws InvalidFieldException {
         GiftCertificate giftCertificate = giftCertificateDtoMapper.map(giftCertificateDto);
 
-        if(giftCertificate.getTags().isEmpty()){
+        if (giftCertificate.getTags().isEmpty()) {
             throw new InvalidFieldException();
         }
         Set<Tag> tags = createCertificateTagRelation(giftCertificate);
@@ -81,7 +76,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         if (giftCertificateDao.findById(id).isEmpty()) {
             throw new ResourceNotFoundException(id);
         }
-        giftCertificateDao.delete(id);
+        GiftCertificate giftCertificate = giftCertificateDao.findById(id).get();
+        giftCertificateDao.delete(giftCertificate);
     }
 
     @Override
@@ -98,7 +94,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         giftCertificateDao.update(currentGiftCertificate);
     }
 
-    private void updateFieldsInGiftCertificate(GiftCertificate currentGiftCertificate, GiftCertificate updatedGiftCertificate) {
+    private void updateFieldsInGiftCertificate(GiftCertificate currentGiftCertificate,
+                                               GiftCertificate updatedGiftCertificate) {
         if (updatedGiftCertificate.getName() != null) {
             currentGiftCertificate.setName(updatedGiftCertificate.getName());
         }

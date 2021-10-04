@@ -18,7 +18,7 @@ public class Tag extends RepresentationModel<Tag> implements Identifiable {
     private long tagId;
 
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 25)
     @Column(name = "name", unique = true)
     private String name;
 

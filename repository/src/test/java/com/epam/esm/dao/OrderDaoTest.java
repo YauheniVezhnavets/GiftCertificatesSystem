@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class OrderDaoTest {
 
 
-    private List<Order> EXPECTED_TAGS = List.of(
+    private List<Order> EXPECTED_ORDER = List.of(
             new Order(1L, new BigDecimal( 100), LocalDateTime.of(2021,9,23, 3,12,15,156)),
             new Order(2L, new BigDecimal( 100), LocalDateTime.of(2021,9,24, 3,12,15,156)));
 
@@ -55,15 +55,15 @@ public class OrderDaoTest {
     @Test
     public void findAll() {
         List<Order> actual = orderDao.findAllOrders(1,1L);
-        assertEquals(EXPECTED_TAGS, actual);
+        assertEquals(EXPECTED_ORDER, actual);
     }
 
 
     @Test
     public void deleteTagTest() {
-        Optional<Order> createdTag = orderDao.findById(1L);
-        orderDao.delete(1L);
-        Optional<Order> emptyTag = orderDao.findById(1L);
-        assertNotEquals(createdTag, emptyTag);
+        Optional<Order> createdOrder = orderDao.findById(1L);
+        orderDao.delete(createdOrder.get());
+        Optional<Order> emptyOrder = orderDao.findById(1L);
+        assertNotEquals(createdOrder, emptyOrder);
     }
 }

@@ -51,7 +51,7 @@ public class UserDao implements EntityDao<User>{
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(User user) {
         throw new UnsupportedOperationException();
     }
 }

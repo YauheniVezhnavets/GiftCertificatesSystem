@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -55,10 +55,23 @@ public class UserServiceImplTest {
     @Test
     public void methodShouldReturnUser() throws ResourceNotFoundException {
 
-        when(userDao.findById(anyLong())).thenReturn(optionalUser);
+        User expected = new User (1L, "Ivan","Ivanov","ivan@mail.ru","ivan");
 
-        User user= userServiceImpl.findUser(1L);
+        when(userDao.findById(anyLong())).thenReturn(Optional.of(expected));
 
-        assertNotNull(user);
+        User user = userServiceImpl.findUser(1L);
+
+        assertEquals(user, expected);
+    }
+
+
+    @Test
+    public void methodShouldReturnException() throws ResourceNotFoundException {
+        when(userDao.findById(0L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+
+            userServiceImpl.findUser(0L);
+        });
     }
 }

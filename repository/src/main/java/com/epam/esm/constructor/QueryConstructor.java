@@ -31,7 +31,7 @@ public class QueryConstructor {
     private static final String GROUP_BY = " GROUP BY id HAVING ";
     private static final String LIMIT = " LIMIT ";
     private static final String OFFSET = " OFFSET ";
-    private static final int PAGE_SIZE = 5;
+    private static final int PAGE_SIZE = 10;
 
 
 
