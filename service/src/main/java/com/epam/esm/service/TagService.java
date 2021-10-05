@@ -5,7 +5,6 @@ import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceDuplicateException;
 import com.epam.esm.exception.ResourceNotFoundException;
 
-
 import java.util.List;
 
 /**
@@ -24,7 +23,7 @@ public interface TagService <T extends Tag> {
      *
      * @return list of{@link Tag}
      */
-    List<Tag> getTags();
+    List<Tag> findTags(int currentPage);
 
 
     /**
@@ -33,7 +32,7 @@ public interface TagService <T extends Tag> {
      * @return {@link Tag}
      * @throws  {@link ResourceNotFoundException} in case if tag not found with searched id.
      */
-    Tag getTag(long tagId) throws ResourceNotFoundException;
+    Tag findTag(long tagId) throws ResourceNotFoundException;
 
 
     /**
@@ -53,4 +52,11 @@ public interface TagService <T extends Tag> {
      */
     void deleteTag(long id) throws ResourceNotFoundException;
 
+
+    /**
+     * This method return most popular tag .
+     *
+     * @throws {@link ResourceNotFoundException} in case if this tag's id not found.
+     */
+    Tag findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) throws ResourceNotFoundException;
 }

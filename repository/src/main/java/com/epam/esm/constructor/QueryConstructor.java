@@ -1,64 +1,69 @@
 package com.epam.esm.constructor;
 
-import com.epam.esm.constant.SqlGiftCertificateQuery;
+
 import org.springframework.stereotype.Component;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class QueryConstructor {
 
-    private static final String SELECT_CERTIFICATES_BY_TAG_NAME_FiRST_PART = "t.name IN ('";
+    private static final String SELECT_CERTIFICATES_BY_TAG_NAME_FiRST_PART = "gift_certificate.id IN \n" +
+            "(SELECT gc.id FROM gift_certificate gc JOIN gift_certificate_tag gct ON \n" +
+            " gct.gift_certificate_id = gc.id  JOIN tag t ON gct.tag_id = t.id \n" +
+            " WHERE t.name = '";
     private static final String SELECT_CERTIFICATES_BY_TAG_NAME_SECOND_PART = "') ";
-    private static final String SELECT_CERTIFICATES_WHERE_MATCH_NAME_FIRST_PART = "gc.name like '%";
+    private static final String SELECT_CERTIFICATES_WHERE_MATCH_NAME_FIRST_PART = "gift_certificate.name Like '%";
     private static final String SELECT_CERTIFICATES_WHERE_MATCH_NAME_SECOND_PART = "%' ";
     private static final String WHERE = "WHERE ";
     private static final String AND = "AND ";
     private static final String ORDER_BY = "ORDER BY ";
     private static final String COMMA = ", ";
-    private static final String SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_FIRST_PART = "gc.description IN ('";
+    private static final String SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_FIRST_PART = "gift_certificate.description IN ('";
     private static final String SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_SECOND_PART = "') ";
-    private static final String SELECT_CERTIFICATES_BY_NAME = "gc.name ";
-    private static final String SELECT_CERTIFICATES_BY_NAME_DESC = "gc.name DESC ";
-    private static final String SELECT_CERTIFICATES_BY_DATE = "gc.last_update_date ";
-    private static final String SELECT_CERTIFICATES_BY_DATE_DESC = "gc.last_update_date DESC ";
+    private static final String SELECT_CERTIFICATES_BY_NAME = "gift_certificate.name ";
+    private static final String SELECT_CERTIFICATES_BY_NAME_DESC = "gift_certificate.name DESC ";
+    private static final String SELECT_CERTIFICATES_BY_DATE = "gift_certificate.last_update_date ";
+    private static final String SELECT_CERTIFICATES_BY_DATE_DESC = "gift_certificate.last_update_date DESC ";
+    private static final String SELECT_ALL_CERTIFICATES = "Select * from gift_certificate ";
+    private static final String GROUP_BY = " GROUP BY id HAVING ";
+    private static final String LIMIT = " LIMIT ";
+    private static final String OFFSET = " OFFSET ";
+    private static final int PAGE_SIZE = 10;
 
 
-    public String constructQuery(String tagName, String giftCertificateName, String description, String sortByName,
-                                 String sortByDate) {
-        StringBuilder query = new StringBuilder(SqlGiftCertificateQuery.FIND_ALL_CERTIFICATES);
 
+    public String constructQuery(Map<String,String> mapWithParameters, Set<String> tagsName, int currentPage) {
+        StringBuilder query = new StringBuilder(SELECT_ALL_CERTIFICATES);
 
-        if (isAnyParameterNotNull(tagName, giftCertificateName, description)) {
+        if (mapWithParameters.get("giftCertificateName")!=null || mapWithParameters.get("description")!=null) {
             query.append(WHERE);
-        }
 
-        if (tagName != null) {
-            getAppendTag(tagName, query);
-            if (giftCertificateName == null && description != null) {
-                query.append(AND);
-                getAppendDescription(description, query);
+            if (mapWithParameters.get("giftCertificateName")!=null) {
+                getAppendName(mapWithParameters.get("giftCertificateName"), query);
+                if (mapWithParameters.get("description")!=null){
+                    query.append(AND);
+                    getAppendDescription(mapWithParameters.get("description"), query);
+                }
+            } else {
+                getAppendDescription(mapWithParameters.get("description"), query);
             }
         }
 
-        if (giftCertificateName != null) {
-            if (tagName != null) {
-                query.append(AND);
+            if (tagsName != null) {
+                getAppendTags(tagsName, query);
             }
-            getAppendName(giftCertificateName, query);
 
-            if (description != null) {
-                query.append(AND);
-                getAppendDescription(description, query);
-            }
+            sortQuery(mapWithParameters.get("sortByName"), mapWithParameters.get("sortByDate"), query);
+
+
+            query.append(OFFSET).append(PAGE_SIZE * (currentPage - 1)).append(LIMIT).append(PAGE_SIZE);
+
+
+            return query.toString();
         }
-
-        if (tagName == null && giftCertificateName == null && description != null) {
-            getAppendDescription(description, query);
-        }
-
-        sortQuery(sortByName, sortByDate, query);
-
-        return query.toString();
-    }
 
 
     private void sortQuery(String sortByName, String sortByDate, StringBuilder query) {
@@ -84,22 +89,29 @@ public class QueryConstructor {
         }
     }
 
-    private void getAppendName(String giftCertificateName, StringBuilder query) {
+    private StringBuilder getAppendName(String giftCertificateName, StringBuilder query) {
         query.append(SELECT_CERTIFICATES_WHERE_MATCH_NAME_FIRST_PART).append(giftCertificateName)
                 .append(SELECT_CERTIFICATES_WHERE_MATCH_NAME_SECOND_PART);
+        return query;
     }
 
-    private void getAppendTag(String tagName, StringBuilder query) {
-        query.append(SELECT_CERTIFICATES_BY_TAG_NAME_FiRST_PART).append(tagName)
-                .append(SELECT_CERTIFICATES_BY_TAG_NAME_SECOND_PART);
-    }
 
     private StringBuilder getAppendDescription(String description, StringBuilder query) {
         return query.append(SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_FIRST_PART).append(description)
                 .append(SELECT_CERTIFICATES_WHERE_MATCH_DESCRIPTION_SECOND_PART);
     }
 
-    private boolean isAnyParameterNotNull(String tagName, String giftCertificateName, String description) {
-        return tagName != null || giftCertificateName != null || description != null;
+    private void getAppendTags(Set<String> tagsName, StringBuilder query) {
+        query.append(GROUP_BY);
+        Iterator<String> iterator = tagsName.iterator();
+        while (iterator.hasNext()) {
+            String tag = iterator.next();
+            query.append(SELECT_CERTIFICATES_BY_TAG_NAME_FiRST_PART).append(tag)
+                    .append(SELECT_CERTIFICATES_BY_TAG_NAME_SECOND_PART);
+            if (iterator.hasNext()) {
+                query.append("AND ");
+            }
+        }
     }
 }
+

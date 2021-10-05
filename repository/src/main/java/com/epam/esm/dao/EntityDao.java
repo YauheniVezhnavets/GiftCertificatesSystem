@@ -39,10 +39,10 @@ public interface EntityDao <T extends Identifiable> {
     /**
      * Deletes a record in the database by id of an {@link Identifiable} object
      *
-     * @param id {@link Identifiable}
+     * @param entity {@link Identifiable}
      */
 
-    void delete(long id);
+    void delete(T entity);
 }
 
 

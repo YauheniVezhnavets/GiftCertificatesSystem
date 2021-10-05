@@ -1,13 +1,11 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.GiftCertificateTagDao;
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.UserDao;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.exception.InvalidFieldException;
-import com.epam.esm.exception.ResourceDuplicateException;
+import com.epam.esm.entities.User;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.impl.TagServiceImpl;
-import com.epam.esm.validator.TagValidator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -15,49 +13,74 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.TestInstance;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TagServiceImplTest {
 
-    private static GiftCertificateTagDao giftCertificateTagDao;
-    private static TagDao tagDao;
-    private static TagValidator tagValidator;
-    private static TagServiceImpl tagServiceImpl;
     private static Tag testTag;
     private static Optional<Tag> optionalTag;
+    private static User testUser;
+    private static Optional<User> optionalUser;
 
+
+    @Mock
+    private TagDao tagDao;
+
+    @Mock
+    private UserDao userDao;
+
+    @InjectMocks
+    private TagServiceImpl tagServiceImpl;
 
     @BeforeAll
-    public static void init() throws ResourceNotFoundException {
-        tagDao = Mockito.mock(TagDao.class);
-        giftCertificateTagDao = Mockito.mock(GiftCertificateTagDao.class);
-        tagValidator = Mockito.mock(TagValidator.class);
-        tagServiceImpl = new TagServiceImpl(tagDao, giftCertificateTagDao, tagValidator);
+    public void init() {
+        MockitoAnnotations.initMocks(this);
         testTag = Mockito.mock(Tag.class);
         optionalTag = Optional.of(testTag);
+        testUser = Mockito.mock(User.class);
+        optionalUser = Optional.of(testUser);
     }
+
+    @Test
+    public void methodShouldCreateTagTest() {
+        long expected = 7L;
+        Tag tag = new Tag("Run");
+        when(tagDao.findByName(anyString())).thenReturn(Optional.empty());
+        when(tagDao.create(tag)).thenReturn(expected);
+
+        tagServiceImpl.createTag(tag);
+
+        verify(tagDao, times(1)).findByName(any());
+        verify(tagDao, times(1)).create(any());
+    }
+
 
     @Test
     public void methodShouldReturnListOfTags() {
 
-        when(tagDao.findAll()).thenReturn(new ArrayList<>());
+        when(tagDao.findAll(1)).thenReturn(new ArrayList<>());
 
-        List<Tag> tags = tagServiceImpl.getTags();
+        List<Tag> tags = tagServiceImpl.findTags(1);
 
         assertNotNull(tags);
     }
 
     @Test
-    public void methodShouldReturnTag() throws ResourceNotFoundException {
+    public void methodShouldReturnTag(){
 
         when(tagDao.findById(anyLong())).thenReturn(optionalTag);
 
-        Tag tag = tagServiceImpl.getTag(1L);
+        Tag tag = tagServiceImpl.findTag(1L);
 
         assertNotNull(tag);
     }
@@ -65,25 +88,33 @@ public class TagServiceImplTest {
     @Test
     public void methodShouldDeleteTag() throws ResourceNotFoundException {
 
-        when(tagDao.findById(anyLong())).thenReturn(optionalTag);
-        doNothing().when(tagDao).delete(anyLong());
-        doNothing().when(giftCertificateTagDao).deleteByTagId(anyLong());
+        doNothing().when(tagDao).delete(optionalTag.get());
 
         tagServiceImpl.deleteTag(1L);
 
-        verify(tagDao, times(1)).delete(anyLong());
-        verify(giftCertificateTagDao, times(1)).deleteByTagId(anyLong());
+        verify(tagDao, times(1)).delete(optionalTag.get());
+
     }
 
     @Test
-    public void methodShouldCreateTag() throws ResourceNotFoundException, InvalidFieldException, ResourceDuplicateException {
+    public void methodShouldFindMostUsedTagOfUserWithHighestCostOfAllOrders(){
+        when(userDao.findById(anyLong())).thenReturn(optionalUser);
+        when(tagDao.findMostUsedTagOfUserWithHighestCostOfAllOrders(anyLong())).thenReturn(Optional.of(testTag));
 
-        when(tagValidator.isNameValid(any())).thenReturn(true);
-        when(tagDao.findByName(anyString())).thenReturn(Optional.empty());
-        when(tagDao.create(any())).thenReturn(anyLong());
+      Tag actual = tagServiceImpl.findMostUsedTagOfUserWithHighestCostOfAllOrders(1L);
 
-        tagServiceImpl.createTag(new Tag("name"));
+       assertEquals(actual,testTag);
 
-        verify(tagDao, times(1)).create(any());
+    }
+
+
+    @Test
+    public void methodShouldReturnExceptionWhenIdNotFound()  {
+        when(tagDao.findById(0L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+
+            tagServiceImpl.findTag(0L);
+        });
     }
 }

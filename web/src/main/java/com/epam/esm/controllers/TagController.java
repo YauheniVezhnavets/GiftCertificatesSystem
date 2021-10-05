@@ -9,8 +9,16 @@ import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -37,9 +45,19 @@ public class TagController {
      *
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of {@link Tag} tags.
      */
-    @GetMapping (produces = JSON)
-    public ResponseEntity<List<Tag>> getTags() {
-        return new ResponseEntity<>(tagService.getTags(), HttpStatus.OK);
+    @GetMapping (produces = JSON, params = {"page"})
+    public ResponseEntity<List<Tag>> getTags(@RequestParam(defaultValue = "1") @Min(1) int page) {
+
+        List<Tag> listOfTags = tagService.findTags(page);
+        listOfTags.stream().forEach(
+                tag -> tag.add(
+                        linkTo(methodOn(TagController.class).getTags(page)).withRel("getTags"),
+                        linkTo(methodOn(TagController.class).getTag(tag.getTagId())).withSelfRel(),
+                        linkTo(methodOn(TagController.class).deleteTag(tag.getTagId())).withRel("deleteTag")
+                )
+        );
+
+        return new ResponseEntity<>(listOfTags, HttpStatus.OK);
     }
 
     /**
@@ -51,7 +69,12 @@ public class TagController {
      */
     @GetMapping(value = "/{id}", produces = JSON)
     public ResponseEntity<Tag> getTag(@PathVariable(ID) long id) throws ResourceNotFoundException {
-        return new ResponseEntity<>(tagService.getTag(id), HttpStatus.OK);
+        Tag tag = tagService.findTag(id);
+        tag.add(
+                linkTo(methodOn(TagController.class).getTag(id)).withSelfRel(),
+                linkTo(methodOn(TagController.class).deleteTag(id)).withRel("deleteTag")
+        );
+        return new ResponseEntity<>(tag, HttpStatus.OK);
     }
     /**
      * Creates new {@link Tag} object and returns an {@link ResponseEntity} object contained
@@ -64,7 +87,10 @@ public class TagController {
      */
 
     @PostMapping(consumes = JSON)
-    public ResponseEntity createTag(@RequestBody Tag tag) throws InvalidFieldException, ResourceDuplicateException {
+    public ResponseEntity createTag(@Valid @RequestBody Tag tag, BindingResult bindingResult) throws InvalidFieldException, ResourceDuplicateException {
+        if (bindingResult.hasErrors()){
+            throw new InvalidFieldException();
+        }
         tagService.createTag(tag);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

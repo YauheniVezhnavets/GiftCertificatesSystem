@@ -1,80 +1,90 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.constant.SqlTagQuery;
+
 import com.epam.esm.entities.Tag;
-import com.epam.esm.mappers.TagMapper;
+import com.epam.esm.utils.Paginator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 @Repository
 public class TagDao implements EntityDao<Tag> {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final TagMapper tagMapper;
+
+    private static final String FIND_TAG_BY_TAG_NAME = "SELECT t FROM Tag t WHERE t.name = :name";
+    private static final String TAG_NAME = "name";
+    private static final String FIND_MOST_POPULAR_TAG = "select t.id as id, t.name as name from user_order uo " +
+            "inner join gift_certificate gc\n" +
+            "on uo.certificate_id=gc.id inner join gift_certificate_tag gct on\n" +
+            "gc.id=gct.gift_certificate_id inner join tag t on gct.tag_id=t.id \n" +
+            "where uo.user_id=(:userId) group by t.id,t.name order by sum(cost) desc limit 1;";
+
+
+    @PersistenceContext
+    protected EntityManager entityManager;
 
     @Autowired
-    public TagDao(JdbcTemplate jdbcTemplate, TagMapper tagMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.tagMapper = tagMapper;
-    }
+    Paginator paginator;
 
 
     @Override
     public long create(Tag tag) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(SqlTagQuery.CREATE_TAG,
-                    Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, tag.getName());
-            return statement;
-        }, keyHolder);
-        Long newId;
-        if (keyHolder.getKeys().size() > 1) {
-            newId = (Long)keyHolder.getKeys().get("id");
-        } else {
-            newId= keyHolder.getKey().longValue();
-        }
-        return newId;
+        entityManager.persist(tag);
+        return tag.getTagId();
     }
 
 
     @Override
     public Optional<Tag> findById(long id) {
-        return jdbcTemplate.query(SqlTagQuery.FIND_TAG_BY_ID, tagMapper, new Object[]{id}).stream().findAny();
+        return Optional.ofNullable(entityManager.find(Tag.class, id));
     }
-
 
     public Optional<Tag> findByName(String name) {
-        return jdbcTemplate.query(SqlTagQuery.FIND_TAG_BY_NAME,tagMapper,new Object[]{name}).stream().findAny();
+
+        Optional<Tag> optionalTag;
+        try {
+            optionalTag = Optional.ofNullable(entityManager.createQuery(FIND_TAG_BY_TAG_NAME, Tag.class).
+                    setParameter(TAG_NAME, name).getSingleResult());
+        } catch (NoResultException e) {
+            optionalTag = Optional.empty();
+        }
+        return optionalTag;
+
+
     }
 
-    public List<Long> getAllTagsIdConnectedWithGiftCertificate(Set<Tag> tags) {
-        return tags.stream().map(tag -> jdbcTemplate.queryForObject(SqlTagQuery.FIND_TAG_ID_BY_NAME,
-                Long.class, tag.getName())).collect(Collectors.toList());
-    }
+    public List<Tag> findAll(int currentPage) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteria = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> root = criteria.from(Tag.class);
+        CriteriaQuery<Tag> findAllQuery = criteria.select(root);
+        TypedQuery<Tag> typedQuery = entityManager.createQuery(findAllQuery);
+        paginator.paginateQuery(currentPage, typedQuery);
 
 
-    public List <Tag> findAll() {
-        return jdbcTemplate.query(SqlTagQuery.FIND_ALL_TAGS, tagMapper);
-    }
-
-
-    public List <Tag> getAllTagsConnectedWithCertificateId (long giftCertificateId){
-        return jdbcTemplate.query(SqlTagQuery.SELECT_ALL_TAGS_BY_CERTIFICATE_ID, tagMapper,
-                giftCertificateId);
+        return typedQuery.getResultList();
     }
 
 
     @Override
-    public void delete(long id) {
-        jdbcTemplate.update(SqlTagQuery.DELETE_TAG,id);
+    public void delete(Tag tag) {
+        entityManager.remove(tag);
+
+    }
+
+    public Optional<Tag> findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) {
+        Tag tag = (Tag) entityManager.createNativeQuery(FIND_MOST_POPULAR_TAG, Tag.class)
+                .setParameter("userId", userId).getSingleResult();
+        return Optional.of(tag);
     }
 }
+

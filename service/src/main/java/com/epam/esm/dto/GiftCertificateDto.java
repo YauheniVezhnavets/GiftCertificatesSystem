@@ -14,7 +14,7 @@ public class GiftCertificateDto {
     private String name;
     private String description;
     private BigDecimal price;
-    private Integer duration;
+    private int duration;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -33,7 +33,8 @@ public class GiftCertificateDto {
     }
 
     public GiftCertificateDto(long id, String name, String description, BigDecimal price, Integer duration,
-                              LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+                              LocalDateTime createDate, LocalDateTime lastUpdateDate
+    ) {
         this.id = id;
         this.name = name;
         this.description = description;

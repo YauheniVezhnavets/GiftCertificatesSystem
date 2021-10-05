@@ -10,8 +10,15 @@ import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *  The class that represents an API for basic giftCertificate-related application operations
@@ -39,7 +46,7 @@ public class GiftCertificateController {
      * from database.The retrieved data has to fill parameters received from request.
      * All parameters are optional.
      *
-     * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
+  //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
      * @param giftCertificateName - part of a name of searched gift certificate.
      * @param description - part of a description of searched gift certificate.
      * @param sortByName - sort of the retrieved gift certificates by name.
@@ -48,15 +55,24 @@ public class GiftCertificateController {
      * {@link GiftCertificateDto}
      */
 
-    @GetMapping(produces = JSON)
+    @GetMapping(produces = JSON, params = {"page"})
     public ResponseEntity<List<GiftCertificateDto>> getGiftCertificates(
-            @RequestParam(required = false) String tagName,
+            @RequestParam (name ="tagName",required = false) Set <String> tagsName,
             @RequestParam(required = false) String giftCertificateName,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String sortByName,
-            @RequestParam (required = false) String sortByDate) {
-        return new ResponseEntity<>(giftCertificateService.getGiftCertificates(tagName,giftCertificateName,
-                description,sortByName,sortByDate), HttpStatus.OK);
+            @RequestParam (required = false) String sortByDate,
+            @RequestParam(defaultValue = "1") @Min(1) int page) {
+
+        Map<String, String> mapWithParameters = new HashMap<>();
+
+        mapWithParameters.put("giftCertificateName", giftCertificateName);
+        mapWithParameters.put("description", description);
+        mapWithParameters.put("sortByName", sortByName);
+        mapWithParameters.put("sortByDate", sortByDate);
+
+        return new ResponseEntity<>(giftCertificateService.findGiftCertificates(tagsName,mapWithParameters,page),
+                HttpStatus.OK);
     }
 
     /**
@@ -70,7 +86,7 @@ public class GiftCertificateController {
     @GetMapping(value = "/{id}", produces = JSON)
     public ResponseEntity<GiftCertificateDto> getGiftCertificate(@PathVariable(ID) long id)
             throws ResourceNotFoundException {
-        return new ResponseEntity<>(giftCertificateService.getGiftCertificate(id), HttpStatus.OK);
+        return new ResponseEntity<>(giftCertificateService.findGiftCertificate(id), HttpStatus.OK);
     }
 
     /**
@@ -84,8 +100,13 @@ public class GiftCertificateController {
      */
 
     @PostMapping(consumes = JSON)
-    public ResponseEntity createGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto)
+    public ResponseEntity createGiftCertificate(@Valid @RequestBody GiftCertificateDto giftCertificateDto,
+                                                BindingResult bindingResult)
             throws InvalidFieldException {
+        if(bindingResult.hasErrors()){
+            throw new InvalidFieldException();
+        }
+
         giftCertificateService.createGiftCertificate(giftCertificateDto);
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -103,7 +124,7 @@ public class GiftCertificateController {
      */
     @PatchMapping(value = "/{id}", consumes = JSON)
     public ResponseEntity updateGiftCertificate(@PathVariable(ID) long id,
-                                                @RequestBody GiftCertificateDto giftCertificateDto)
+                                                @Valid @RequestBody GiftCertificateDto giftCertificateDto)
             throws ResourceNotFoundException, InvalidFieldException {
         giftCertificateService.updateGiftCertificate(id, giftCertificateDto);
         return new ResponseEntity(HttpStatus.OK);

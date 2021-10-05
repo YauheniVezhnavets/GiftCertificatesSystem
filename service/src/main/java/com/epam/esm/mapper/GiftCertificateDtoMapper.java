@@ -10,17 +10,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class GiftCertificateDtoMapper {
 
-    public GiftCertificateDto map(GiftCertificate giftCertificate) {
-        List <String> listOfTagsName = new ArrayList<>();
+    public GiftCertificateDto mapToDto(GiftCertificate giftCertificate) {
+       List <String> listOfTagsName = new ArrayList<>();
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto(
                 giftCertificate.getCertificateId(), giftCertificate.getName(),
                 giftCertificate.getDescription(), giftCertificate.getPrice(), giftCertificate.getDuration(),
-               giftCertificate.getCreateDate(),giftCertificate.getLastUpdateDate());
+                giftCertificate.getCreateDate(),giftCertificate.getLastUpdateDate());
 
         giftCertificate.getTags().stream().forEach(tag -> listOfTagsName.add(tag.getName()));
 
@@ -28,12 +27,16 @@ public class GiftCertificateDtoMapper {
         return giftCertificateDto;
     }
 
-    public GiftCertificate mapToDto(GiftCertificateDto giftCertificateDto) {
+    public GiftCertificate map(GiftCertificateDto giftCertificateDto) {
 
         GiftCertificate giftCertificate = new GiftCertificate(
-                giftCertificateDto.getId(), giftCertificateDto.getName(),
-                giftCertificateDto.getDescription(), giftCertificateDto.getPrice(), giftCertificateDto.getDuration(),
-                giftCertificateDto.getCreateDate(),giftCertificateDto.getLastUpdateDate());
+                giftCertificateDto.getId(),
+                giftCertificateDto.getName(),
+                giftCertificateDto.getDescription(),
+                giftCertificateDto.getPrice(),
+                giftCertificateDto.getDuration(),
+                giftCertificateDto.getCreateDate(),
+                giftCertificateDto.getLastUpdateDate());
 
         Set<Tag> setOfTags = new HashSet<>();
 

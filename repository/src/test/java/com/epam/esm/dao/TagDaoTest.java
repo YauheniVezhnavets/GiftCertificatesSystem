@@ -1,99 +1,82 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.config.DataSourceConfig;
+import com.epam.esm.config.EntityManagerFactoryConfig;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.mappers.TagMapper;
-import org.junit.jupiter.api.*;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.epam.esm.utils.Paginator;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(SpringExtension.class)
+@DirtiesContext
+@ContextConfiguration(classes = { TagDao.class, Paginator.class, EntityManagerFactoryConfig.class},
+        loader = AnnotationConfigContextLoader.class)
+@SpringBootTest
+@Transactional
+@ActiveProfiles("dev")
 public class TagDaoTest {
 
-    private static final String SELECT_BY_ID = "SELECT * FROM tag WHERE id = ";
-    private static final String SELECT_BY_SPECIFIC_ID = "SELECT * FROM tag WHERE id = 1";
+    private List <Tag> EXPECTED_TAGS = List.of(
+            new Tag (1L,"Relax"),
+            new Tag (2L,"Music"),
+            new Tag (3L,"Movie"),
+            new Tag (4L,"Shopping"),
+            new Tag (5L,"Coffee"),
+            new Tag (6L,"Sport"),
+            new Tag (7L,"Run"),
+            new Tag (8L,"Test"),
+            new Tag (9L,"Football"),
+            new Tag (10L,"Hockey"));
 
-    private static JdbcTemplate jdbcTemplate;
-    private static TagMapper tagMapper = new TagMapper();
+    @Autowired
     private TagDao tagDao;
 
-    @BeforeEach
-    public void initDatabase() {
-        jdbcTemplate = new JdbcTemplate(DataSourceConfig.dataSource);
-        tagDao = new TagDao(jdbcTemplate, tagMapper);
+
+    @Test
+    public void findByNameTest() {
+          Optional<Tag> expected = Optional.of(new Tag(1L,"Relax"));
+          Optional<Tag> actual = tagDao.findByName("Relax");
+          assertEquals(expected, actual);
     }
 
     @Test
-    @Order(1)
-    public void methodShouldReturnAllTags() {
-
-        List <Tag> expected = List.of(new Tag(1L,"Relax"),new Tag(2L,"Music"));
-        List <Tag> actual = tagDao.findAll();
-        assertEquals(expected, actual);
-    }
-
-
-    @Test
-    @Order(2)
-    public void methodShouldReturnTagWhenTagNameCorrect() {
-        Optional<Tag> expected = Optional.of(new Tag("Relax"));
-        Optional<Tag> actual = tagDao.findByName("Relax");
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    @Order(3)
-    public void methodShouldReturnEmptyWhenTagIdIncorrect() {
-        Optional<Tag> expected = Optional.empty();
-        Optional<Tag> actual = tagDao.findById(10000L);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    @Order(4)
-    public void methodShouldReturnTagWhenTagIdCorrect() {
-        Optional<Tag> expected = Optional.of(new Tag(1L, "Relax"));
+    public void findById() {
+        Optional<Tag> expected = Optional.of(new Tag(1L,"Relax"));
         Optional<Tag> actual = tagDao.findById(1L);
         assertEquals(expected, actual);
     }
 
     @Test
-    @Order(5)
-    public void methodShouldReturnAllIdThatRelatedToCertificate() {
-        Set <Tag> tags = Set.of(new Tag(1L, "Relax"), new Tag(2L, "Music"));
-        List <Long> expected = List.of(1L, 2L);
-        List <Long> actual = tagDao.getAllTagsIdConnectedWithGiftCertificate(tags);
-        Collections.sort(actual);
+    public void findAll() {
+        List <Tag> actual = tagDao.findAll(1);
+        assertEquals(EXPECTED_TAGS, actual);
+    }
+
+    @Test
+    public void createTagTest() {
+        long expected = 11;
+        long actual = tagDao.create(new Tag("Run"));
         assertEquals(expected, actual);
     }
 
     @Test
-    @Order(6)
-    public void methodShouldCreateNewTag() {
-
-        Tag test = new Tag("Funny");
-        Long createdId = tagDao.create(test);
-
-        Tag actual = jdbcTemplate.query(SELECT_BY_ID + createdId, tagMapper)
-                .stream().findAny().orElse(null);
-
-        Assertions.assertEquals(test, actual);
-    }
-
-    @Test
-    @Order(7)
-    public void methodShouldDeleteTag() {
-
-        Long id = 1L;
-
-        tagDao.delete(id);
-        Tag actual = jdbcTemplate.query(SELECT_BY_SPECIFIC_ID, tagMapper)
-                .stream().findAny().orElse(null);
-
-        assertNull(actual);
+    public void deleteTagTest() {
+        Optional <Tag> createdTag = tagDao.findById(6L);
+        tagDao.delete(createdTag.get());
+        Optional <Tag> emptyTag = tagDao.findById(6L);
+        assertNotEquals(createdTag,emptyTag);
     }
 }

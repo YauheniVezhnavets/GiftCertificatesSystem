@@ -1,5 +1,6 @@
 plugins {
     id 'war'
+    id 'application'
 }
 
 archivesBaseName = 'GiftCertificateSystem'
@@ -12,17 +13,18 @@ repositories {
 }
 
 dependencies {
-    compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.9'
-    implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.3.9'
-    implementation group: 'org.springframework', name: 'spring-web', version: '5.3.9'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.5.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.4'
+ //   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.4'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.4'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.4'
     implementation project(':service')
     implementation project(':repository')
 }
 
-
+application {
+    mainClass.set('com.epam.esm.SpringBootApp')
+}
 
 
