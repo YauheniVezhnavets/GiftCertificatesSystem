@@ -1,7 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.entities.GiftCertificate;
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceNotFoundException;
 
@@ -20,12 +20,38 @@ import java.util.Set;
 
 public interface GiftCertificateService <T extends GiftCertificate> {
 
+
+    /**
+     * This method return all active gift certificates.
+     * @return list of{@link GiftCertificateDto}
+     */
+
+    List<GiftCertificateDto> findAllGiftCertificates();
+
     /**
      * This method return existing gift certificates with criteria.
      * @return list of{@link GiftCertificateDto}
      */
-    List<GiftCertificateDto> findGiftCertificates(Set<String> tagsName, Map<String, String> mapWithParameters,
+    List<GiftCertificateDto> findGiftCertificates( Map<String, String> mapWithParameters,
                                                   int currentPage);
+
+    /**
+     * This method return existing gift certificates with concrete tags.
+     * @return list of{@link GiftCertificateDto}
+     */
+    List<GiftCertificateDto> findGiftCertificatesByTags(Set<String> tagsName
+//            ,
+//                                                  int currentPage
+    );
+
+
+    /**
+     * This method return sorted existing gift certificates.
+     * @return list of{@link GiftCertificateDto}
+     */
+    public List<GiftCertificateDto> findGiftCertificatesAndSort(Map <String,String> sortNames
+                                                                //           , int currentPage
+    );
 
     /**
      * This method return gift certificate by his id.

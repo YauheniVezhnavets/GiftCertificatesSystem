@@ -1,91 +1,59 @@
-package com.epam.esm.entities;
+package com.epam.esm.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
-@Table(name = "users")
+@Table(name = "users",
+        uniqueConstraints = {
+        @UniqueConstraint(name = "user_email_unique",columnNames = "email")
+        }
+)
 public class User extends RepresentationModel<User> implements Identifiable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "id")
+    @SequenceGenerator(
+            name = "user_id_seq",
+            sequenceName = "user_id_seq",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "user_id_seq"
+    )
+    @Column (name = "id", updatable = false)
     private long userId;
 
     @NotBlank
     @Size(min = 1, max = 50)
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firsName;
 
     @NotBlank
     @Size(min = 1, max = 50)
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @NotBlank
     @Size(min = 3, max = 50)
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
 
     @NotBlank
     @Size(min = 4, max = 50)
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
-
-
-    public User () {
-    }
-
-    public User(long userId, String firsName, String lastName, String email, String password) {
-        this.userId = userId;
-        this.firsName = firsName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public String getFirsName() {
-        return firsName;
-    }
-
-    public void setFirsName(String firsName) {
-        this.firsName = firsName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 
     @Override
@@ -114,16 +82,5 @@ public class User extends RepresentationModel<User> implements Identifiable {
         result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
         result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", firsName='" + firsName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
     }
 }

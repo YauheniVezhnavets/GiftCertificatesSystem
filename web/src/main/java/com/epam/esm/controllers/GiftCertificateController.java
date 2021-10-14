@@ -2,8 +2,8 @@ package com.epam.esm.controllers;
 
 
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.entities.GiftCertificate;
-import com.epam.esm.entities.Tag;
+import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.GiftCertificateService;
@@ -27,7 +27,7 @@ import java.util.Set;
 
 
 @RestController
-@RequestMapping("/certificates")
+@RequestMapping("api/v1/certificates")
 public class GiftCertificateController {
 
     private static final String JSON = "application/json";
@@ -40,6 +40,13 @@ public class GiftCertificateController {
         this.giftCertificateService = giftCertificateService;
     }
 
+    @GetMapping()
+    public ResponseEntity<List<GiftCertificateDto>> getAllGiftCertificates() {
+
+        return new ResponseEntity<>(giftCertificateService.findAllGiftCertificates(),
+                HttpStatus.OK);
+    }
+
     /**
      * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link List} list of
      * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
@@ -48,32 +55,86 @@ public class GiftCertificateController {
      *
   //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
      * @param giftCertificateName - part of a name of searched gift certificate.
-     * @param description - part of a description of searched gift certificate.
-     * @param sortByName - sort of the retrieved gift certificates by name.
+   //  * @param description - part of a description of searched gift certificate.
+     * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
+     * {@link GiftCertificateDto}
+     */
+
+    @GetMapping(value = "/search", produces = JSON)
+    public ResponseEntity<List<GiftCertificateDto>> getGiftCertificatesWithCriteria(
+
+            @RequestParam(required = false) String giftCertificateName,
+            @RequestParam(required = false) String description,
+            @RequestParam(defaultValue = "1") @Min(1) int page) {
+
+        Map<String, String> mapWithParameters = new HashMap<>();
+
+            mapWithParameters.put("giftCertificateName", giftCertificateName);
+            mapWithParameters.put("description", description);
+
+        return new ResponseEntity<>(giftCertificateService.findGiftCertificates(mapWithParameters,page),
+                HttpStatus.OK);
+    }
+
+
+    /**
+     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link List} list of
+     * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
+     * from database.The retrieved data has to fill parameters received from request.
+     * All parameters are optional.
+     *
+     //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
+
+     * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
+     * {@link GiftCertificateDto}
+     */
+
+    @GetMapping(value = "/tags", produces = JSON)
+    public ResponseEntity<List<GiftCertificateDto>> getGiftCertificatesByTags(
+            @RequestParam (name ="tagName") Set <String> tagsName
+    )
+//            ,
+//            @RequestParam(defaultValue = "1") @Min(1) int page)
+    {
+
+        return new ResponseEntity<>(giftCertificateService.findGiftCertificatesByTags(tagsName
+    //            ,page
+        ),
+                HttpStatus.OK);
+    }
+
+    /**
+     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link List} list of
+     * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
+     * from database.The retrieved data has to fill parameters received from request.
+     * All parameters are optional.
+     *
+   //  * @param sortByName - sort of the retrieved gift certificates by name.
      * @param sortByDate - sort of the retrieved gift certificates by creation date.
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
      * {@link GiftCertificateDto}
      */
 
-    @GetMapping(produces = JSON, params = {"page"})
-    public ResponseEntity<List<GiftCertificateDto>> getGiftCertificates(
-            @RequestParam (name ="tagName",required = false) Set <String> tagsName,
-            @RequestParam(required = false) String giftCertificateName,
-            @RequestParam(required = false) String description,
+    @GetMapping(value = "/sort", produces = JSON)
+    public ResponseEntity<List<GiftCertificateDto>> getGiftCertificatesAndSort(
+
             @RequestParam(required = false) String sortByName,
-            @RequestParam (required = false) String sortByDate,
-            @RequestParam(defaultValue = "1") @Min(1) int page) {
+            @RequestParam(required = false) String sortByDate,
+            @RequestParam(defaultValue = "1") @Min(1) int page)
+                   {
 
         Map<String, String> mapWithParameters = new HashMap<>();
 
-        mapWithParameters.put("giftCertificateName", giftCertificateName);
-        mapWithParameters.put("description", description);
-        mapWithParameters.put("sortByName", sortByName);
-        mapWithParameters.put("sortByDate", sortByDate);
-
-        return new ResponseEntity<>(giftCertificateService.findGiftCertificates(tagsName,mapWithParameters,page),
+        if (sortByName!=null) {
+            mapWithParameters.put("sortByName", sortByName);
+        }
+        if (sortByDate!=null) {
+            mapWithParameters.put("sortByDate", sortByDate);
+        }
+        return new ResponseEntity<>(giftCertificateService.findGiftCertificatesAndSort(mapWithParameters),
                 HttpStatus.OK);
     }
+
 
     /**
      * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link GiftCertificateDto}

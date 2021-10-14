@@ -1,6 +1,6 @@
 package com.epam.esm.service;
 
-import com.epam.esm.entities.Tag;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceDuplicateException;
 import com.epam.esm.exception.ResourceNotFoundException;

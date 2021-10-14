@@ -1,8 +1,8 @@
 package com.epam.esm.mapper;
 
 import com.epam.esm.dto.OrderDto;
-import com.epam.esm.entities.GiftCertificate;
-import com.epam.esm.entities.Order;
+import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Order;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -12,13 +12,12 @@ import java.time.LocalDateTime;
 public class OrderMapper {
 
     public OrderDto mapToDto(Order order) {
-        long orderDtoId = order.getOrderId();
-        BigDecimal orderDtoCost = order.getCost();
-        LocalDateTime purchase_date = order.getPurchaseDate();
-        GiftCertificate giftCertificate = order.getCertificate();
+        OrderDto orderDto = new OrderDto();
 
-        OrderDto orderDto = new OrderDto(orderDtoId, orderDtoCost, purchase_date);
-        orderDto.setGiftCertificate(giftCertificate);
+        orderDto.setOrderId(order.getOrderId());
+        orderDto.setCost(order.getCost());
+        orderDto.setPurchaseDate(order.getPurchaseDate());
+        orderDto.setGiftCertificate(order.getCertificate());
 
         return orderDto;
     }

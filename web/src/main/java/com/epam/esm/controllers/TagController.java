@@ -1,7 +1,7 @@
 package com.epam.esm.controllers;
 
 
-import com.epam.esm.entities.Tag;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceDuplicateException;
 import com.epam.esm.exception.ResourceNotFoundException;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 import javax.validation.Valid;
@@ -26,7 +25,7 @@ import java.util.List;
  *  @author Yauheni Vezhnavets
  **/
 @RestController
-@RequestMapping("/tags")
+@RequestMapping("api/v1/tags")
 public class TagController {
 
     private static final String JSON = "application/json";
@@ -49,13 +48,13 @@ public class TagController {
     public ResponseEntity<List<Tag>> getTags(@RequestParam(defaultValue = "1") @Min(1) int page) {
 
         List<Tag> listOfTags = tagService.findTags(page);
-        listOfTags.stream().forEach(
-                tag -> tag.add(
-                        linkTo(methodOn(TagController.class).getTags(page)).withRel("getTags"),
-                        linkTo(methodOn(TagController.class).getTag(tag.getTagId())).withSelfRel(),
-                        linkTo(methodOn(TagController.class).deleteTag(tag.getTagId())).withRel("deleteTag")
-                )
-        );
+//        listOfTags.stream().forEach(
+//                tag -> tag.add(
+//                        linkTo(methodOn(TagController.class).getTags(page)).withRel("getTags"),
+//                        linkTo(methodOn(TagController.class).getTag(tag.getTagId())).withSelfRel(),
+//                        linkTo(methodOn(TagController.class).deleteTag(tag.getTagId())).withRel("deleteTag")
+//                )
+//        );
 
         return new ResponseEntity<>(listOfTags, HttpStatus.OK);
     }
@@ -70,10 +69,10 @@ public class TagController {
     @GetMapping(value = "/{id}", produces = JSON)
     public ResponseEntity<Tag> getTag(@PathVariable(ID) long id) throws ResourceNotFoundException {
         Tag tag = tagService.findTag(id);
-        tag.add(
-                linkTo(methodOn(TagController.class).getTag(id)).withSelfRel(),
-                linkTo(methodOn(TagController.class).deleteTag(id)).withRel("deleteTag")
-        );
+//        tag.add(
+//                linkTo(methodOn(TagController.class).getTag(id)).withSelfRel(),
+//                linkTo(methodOn(TagController.class).deleteTag(id)).withRel("deleteTag")
+//        );
         return new ResponseEntity<>(tag, HttpStatus.OK);
     }
     /**

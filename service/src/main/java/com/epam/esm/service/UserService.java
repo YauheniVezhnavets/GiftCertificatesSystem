@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
-import com.epam.esm.entities.User;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.User;
 import com.epam.esm.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 
 
-public interface UserService <T extends User> {
+public interface UserService<T extends User> {
 
 
     /**
@@ -33,5 +34,8 @@ public interface UserService <T extends User> {
      * @throws  {@link ResourceNotFoundException} in case if user not found with searched id.
      */
     User findUser(long userId) throws ResourceNotFoundException;
+
+
+    Tag findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) throws ResourceNotFoundException;
 
 }

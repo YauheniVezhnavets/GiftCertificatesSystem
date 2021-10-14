@@ -70,14 +70,14 @@ public class GiftCertificateSystemExceptionHandler extends ResponseEntityExcepti
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-        @ExceptionHandler(Exception.class)
-        public ResponseEntity<ExceptionResponse> handleRuntimeExceptions(Exception e,WebRequest request) {
-            Locale locale = request.getLocale();
-            String message = ExceptionResponse.getMessageForLocale(MESSAGE_KEY_BAD_ENTITY,locale);
-            int errorCode = 404;
-
-            ExceptionResponse response = new ExceptionResponse(message,errorCode);
-
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
+//        @ExceptionHandler(Exception.class)
+//        public ResponseEntity<ExceptionResponse> handleRuntimeExceptions(Exception e,WebRequest request) {
+//            Locale locale = request.getLocale();
+//            String message = ExceptionResponse.getMessageForLocale(MESSAGE_KEY_BAD_ENTITY,locale);
+//            int errorCode = 404;
+//
+//            ExceptionResponse response = new ExceptionResponse(message,errorCode);
+//
+//            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+//        }
 }

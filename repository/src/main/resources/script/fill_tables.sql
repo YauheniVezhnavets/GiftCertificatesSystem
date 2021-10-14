@@ -1,5 +1,5 @@
 insert into gift_certificate (name, description, price, duration, create_date, last_update_date)
-values ('Golden_Coffee', 'Taste our best coffee.', 30.00, 30, '2021-08-31T03:12:15.156Z', '2021-08-31T03:12:15.156Z');
+values ('Golden_Coffee', 'Taste our best coffee.', 30.00, 30, '2021-08-31T03:12:15Z', '2021-08-31T03:12:15Z');
 insert into gift_certificate (name, description, price, duration, create_date, last_update_date)
 values ('Bate', 'You can visit all home matches in season ', 100, 270, '2021-08-30T03:12:15.156Z', '2021-08-30T03:12:15.156Z');
 insert into gift_certificate (name, description, price, duration, create_date, last_update_date)
@@ -76,3 +76,5 @@ INSERT INTO user_order (cost, purchase_date, user_id, certificate_id) VALUES (30
 INSERT INTO user_order (cost, purchase_date, user_id, certificate_id) VALUES (50, '2021-09-22T03:12:15.156Z', 4, 6);
 INSERT INTO user_order (cost, purchase_date, user_id, certificate_id) VALUES (20, '2021-09-21T03:12:15.156Z', 5, 4);
 INSERT INTO user_order (cost, purchase_date, user_id, certificate_id) VALUES (70, '2021-09-25T03:12:15.156Z', 5, 7);
+
+

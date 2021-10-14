@@ -1,9 +1,9 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.OrderDto;
-import com.epam.esm.entities.Order;
+import com.epam.esm.entity.Order;
 import com.epam.esm.exception.ResourceNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 

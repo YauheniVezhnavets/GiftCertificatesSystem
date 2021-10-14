@@ -1,35 +1,49 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.UserDao;
-import com.epam.esm.entities.User;
+
+import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.User;
 import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.repository.TagRepository;
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
+@Service("userService")
+@AllArgsConstructor
+public class UserServiceImpl implements UserService<User> {
 
 
-@Service
-public class UserServiceImpl implements UserService <User> {
-
-    private final UserDao userDao;
-
-
-    @Autowired
-    public UserServiceImpl(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
+    private final UserRepository userRepository;
+    private final TagRepository tagRepository;
 
     @Override
     public List<User> findUsers(int currentPage) {
-        return userDao.findAll(currentPage);
+        List<User> users = userRepository.findAll();
+        return users;
     }
 
 
     @Override
     public User findUser(long userId) throws ResourceNotFoundException {
-       return userDao.findById(userId).orElseThrow((() -> new ResourceNotFoundException(userId)));
+        return userRepository.findById(userId).get();
+    }
+
+    @Override
+    public Tag findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) throws ResourceNotFoundException {
+
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new ResourceNotFoundException(userId);
+        }
+
+        Optional<Tag> optionalTag = tagRepository.findMostUsedTagOfUserWithHighestCostOfAllOrders(userId);
+        if (optionalTag.isEmpty()) {
+            throw new ResourceNotFoundException(userId);
+        }
+        return optionalTag.get();
     }
 }

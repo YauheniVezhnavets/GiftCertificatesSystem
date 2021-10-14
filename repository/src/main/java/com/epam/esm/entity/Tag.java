@@ -1,50 +1,45 @@
-package com.epam.esm.entities;
+package com.epam.esm.entity;
 
 
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "tag")
 public class Tag extends RepresentationModel<Tag> implements Identifiable {
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(
+            name = "tag_id_seq",
+            sequenceName = "tag_id_seq",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "tag_id_seq"
+    )
     @Column(name = "id")
     private long tagId;
 
     @NotBlank
     @Size(min = 3, max = 25)
-    @Column(name = "name", unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
-
-    public Tag() {
-
-    }
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
 
     public Tag(String name) {
-        this.name = name;
-    }
-
-    public Tag(long tagId, String name) {
-        this.tagId = tagId;
-        this.name = name;
-    }
-
-    public long getTagId() {
-        return tagId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
     }
 
@@ -57,6 +52,7 @@ public class Tag extends RepresentationModel<Tag> implements Identifiable {
         Tag tag = (Tag) o;
 
         if (getTagId() != tag.getTagId()) return false;
+        if (isActive() != tag.isActive()) return false;
         return getName() != null ? getName().equals(tag.getName()) : tag.getName() == null;
     }
 
@@ -65,14 +61,7 @@ public class Tag extends RepresentationModel<Tag> implements Identifiable {
         int result = super.hashCode();
         result = 31 * result + (int) (getTagId() ^ (getTagId() >>> 32));
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (isActive() ? 1 : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Tag{" +
-                "tagId=" + tagId +
-                ", name='" + name + '\'' +
-                '}';
     }
 }

@@ -21,32 +21,32 @@ import java.util.Properties;
 @Profile("dev")
 public class EntityManagerFactoryConfig  {
 
-    public static final DataSource dataSource = new DatabaseConfig().embeddedDataSource();
-
-    private static final String PACKAGE_TO_SCAN = "com.epam.esm";
-
-
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setDataSource(dataSource);
-        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan(PACKAGE_TO_SCAN);
-        Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.hbm2ddl.auto", "none");
-        jpaProperties.put("hibernate.show_sql", "true");
-        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        factory.setJpaProperties(jpaProperties);
-        return factory;
-    }
-
-
-    @Bean
-    @Autowired
-    public PlatformTransactionManager transactionManager(final EntityManagerFactory factory) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(factory);
-        return transactionManager;
-    }
+//    public static final DataSource dataSource = new DatabaseConfig().embeddedDataSource();
+//
+//    private static final String PACKAGE_TO_SCAN = "com.epam.esm";
+//
+//
+//    @Bean
+//    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+//        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+//        factory.setDataSource(dataSource);
+//        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+//        factory.setJpaVendorAdapter(vendorAdapter);
+//        factory.setPackagesToScan(PACKAGE_TO_SCAN);
+//        Properties jpaProperties = new Properties();
+//        jpaProperties.put("hibernate.hbm2ddl.auto", "none");
+//        jpaProperties.put("hibernate.show_sql", "true");
+//        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+//        factory.setJpaProperties(jpaProperties);
+//        return factory;
+//    }
+//
+//
+//    @Bean
+//    @Autowired
+//    public PlatformTransactionManager transactionManager(final EntityManagerFactory factory) {
+//        JpaTransactionManager transactionManager = new JpaTransactionManager();
+//        transactionManager.setEntityManagerFactory(factory);
+//        return transactionManager;
+//    }
 }

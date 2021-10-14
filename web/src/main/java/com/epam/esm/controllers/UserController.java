@@ -1,9 +1,9 @@
 package com.epam.esm.controllers;
 
 import com.epam.esm.dto.OrderDto;
-import com.epam.esm.entities.Order;
-import com.epam.esm.entities.Tag;
-import com.epam.esm.entities.User;
+import com.epam.esm.entity.Order;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.User;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.TagService;
@@ -25,7 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  **/
 
 @RestController
-@RequestMapping ("/users")
+@RequestMapping ("api/v1/users")
 public class UserController {
 
     private static final String JSON = "application/json";
@@ -54,12 +54,12 @@ public class UserController {
     public ResponseEntity<List<User>> getUsers( @RequestParam(defaultValue = "1") @Min(1) int page) {
 
         List<User> listOfUsers = userService.findUsers(page);
-        listOfUsers.stream().forEach(
-                user -> user.add(
-                        linkTo(methodOn(UserController.class).getUsers(page)).withRel("getUsers"),
-                        linkTo(methodOn(UserController.class).getUser(user.getUserId())).withSelfRel()
-                )
-        );
+//        listOfUsers.stream().forEach(
+//                user -> user.add(
+//                        linkTo(methodOn(UserController.class).getUsers(page)).withRel("getUsers"),
+//                        linkTo(methodOn(UserController.class).getUser(user.getUserId())).withSelfRel()
+//                )
+//        );
 
         return new ResponseEntity<>(listOfUsers, HttpStatus.OK);
     }
@@ -75,9 +75,9 @@ public class UserController {
     @GetMapping(value = "/{userId}", produces = JSON)
     public ResponseEntity<User> getUser(@PathVariable(USER_ID) long id) throws ResourceNotFoundException {
         User user = userService.findUser(id);
-        user.add(
-                linkTo(methodOn(UserController.class).getUser(id)).withSelfRel()
-        );
+//        user.add(
+//                linkTo(methodOn(UserController.class).getUser(id)).withSelfRel()
+//        );
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
