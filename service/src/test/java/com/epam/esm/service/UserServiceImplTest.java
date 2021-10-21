@@ -2,14 +2,11 @@ package com.epam.esm.service;
 
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.entity.Role;
-import com.epam.esm.exception.ResourceDuplicateException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.mapper.UserDtoMapper;
-import com.epam.esm.mapper.UserMapper;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.impl.UserServiceImpl;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

@@ -1,7 +1,6 @@
 package com.epam.esm.entity;
 
 import lombok.*;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -46,6 +45,17 @@ public class Order implements Identifiable {
     @PrePersist
     private void onPrePersist() {
         setPurchaseDate(LocalDateTime.now());
+    }
+
+    public Order(BigDecimal cost, LocalDateTime purchaseDate) {
+        this.cost = cost;
+        this.purchaseDate = purchaseDate;
+    }
+
+    public Order(long orderId, BigDecimal cost, LocalDateTime purchaseDate) {
+        this.orderId = orderId;
+        this.cost = cost;
+        this.purchaseDate = purchaseDate;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class UserController {
     }
 
     /**
-     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link List}
+     * Returns an {@link PagedModelDto} object contained {@link HttpStatus} status and a {@link List}
      * list of {@link User} users retrieved from database.
      *
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of {@link User} users.
@@ -69,7 +69,7 @@ public class UserController {
     }
 
     /**
-     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link User} object
+     * Returns an {@link EntityModel} object contained {@link HttpStatus} status and a {@link User} object
      * from database.
      * @param id - id of {@link User} that has to be retrieved from database.
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and an {@link User} object.
@@ -86,6 +86,11 @@ public class UserController {
     }
 
 
+    /**
+     * Returns an {@link PagedModelDto} object contained {@link HttpStatus} status and a {@link List}
+     * list of {@link Order} orders retrieved from database.
+     *
+     */
     @GetMapping(value = "/{userId}/orders", produces = JSON)
     @PreAuthorize("hasAuthority('order:read')")
     public PagedModelDto getOrders(@PathVariable(USER_ID) long id,
@@ -96,7 +101,10 @@ public class UserController {
         return new PagedModelDto(assembler.toModel(orders),HttpStatus.OK);
     }
 
-
+    /**
+     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link OrderDto} object
+     * from database.
+     */
     @GetMapping(value ="/{userId}/orders/{certificateId}", produces = JSON)
     @PreAuthorize("hasAuthority('order:read')")
     public ResponseEntity <OrderDto> getOrder( @PathVariable (USER_ID) long userId,
@@ -105,7 +113,9 @@ public class UserController {
         return new ResponseEntity<>(orderDto, HttpStatus.OK);
     }
 
-
+    /**
+     * This method create order
+     */
     @PostMapping(value ="/{userId}/orders/{certificateId}", produces = JSON)
     @PreAuthorize("hasAuthority('order:write')")
     public ResponseEntity createOrder( @PathVariable (USER_ID) long userId,

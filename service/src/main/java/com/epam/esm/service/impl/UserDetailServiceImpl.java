@@ -1,6 +1,5 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.entity.SecurityUser;
 import com.epam.esm.entity.User;
 import com.epam.esm.mapper.UserMapper;
 import com.epam.esm.repository.UserRepository;

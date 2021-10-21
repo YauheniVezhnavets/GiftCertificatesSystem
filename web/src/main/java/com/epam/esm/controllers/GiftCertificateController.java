@@ -3,8 +3,6 @@ package com.epam.esm.controllers;
 
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.PagedModelDto;
-import com.epam.esm.dto.TagDto;
-import com.epam.esm.dto.UserDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.InvalidFieldException;
@@ -65,7 +63,7 @@ public class GiftCertificateController {
     }
 
     /**
-     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link List} list of
+     * Returns an {@link PagedModelDto} object contained {@link HttpStatus} status and a {@link List} list of
      * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
      * from database.The retrieved data has to fill parameters received from request.
      * All parameters are optional.
@@ -74,7 +72,7 @@ public class GiftCertificateController {
      *
      * @param giftCertificateName - part of a name of searched gift certificate.
      *                            //  * @param description - part of a description of searched gift certificate.
-     * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
+     * @return {@link PagedModelDto} contained both {@link HttpStatus} status and {@link List} of
      * {@link GiftCertificateDto}
      */
 
@@ -101,14 +99,14 @@ public class GiftCertificateController {
 
 
     /**
-     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link List} list of
+     * Returns an {@link PagedModelDto} object contained {@link HttpStatus} status and a {@link List} list of
      * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
      * from database.The retrieved data has to fill parameters received from request.
      * All parameters are optional.
      * <p>
      * //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
      *
-     * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
+     * @return {@link PagedModelDto} contained both {@link HttpStatus} status and {@link List} of
      * {@link GiftCertificateDto}
      */
 
@@ -127,7 +125,7 @@ public class GiftCertificateController {
     }
 
     /**
-     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link List} list of
+     * Returns an {@link PagedModelDto} object contained {@link HttpStatus} status and a {@link List} list of
      * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
      * from database.The retrieved data has to fill parameters received from request.
      * All parameters are optional.
@@ -135,7 +133,7 @@ public class GiftCertificateController {
      * //  * @param sortByName - sort of the retrieved gift certificates by name.
      *
      * @param sortByDate - sort of the retrieved gift certificates by creation date.
-     * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
+     * @return {@link PagedModelDto} contained both {@link HttpStatus} status and {@link List} of
      * {@link GiftCertificateDto}
      */
 
@@ -157,10 +155,10 @@ public class GiftCertificateController {
         if (sortByDate != null) {
             mapWithParameters.put("sortByDate", sortByDate);
         }
-//        return new ResponseEntity<>(
+
         Page<GiftCertificateDto> giftCertificates = giftCertificateService.
                 findGiftCertificatesAndSort(mapWithParameters,page,size);
-//                HttpStatus.OK);
+
 
         return new PagedModelDto(
                 assembler.toModel(giftCertificates), HttpStatus.OK);
@@ -168,11 +166,11 @@ public class GiftCertificateController {
 
 
     /**
-     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link GiftCertificateDto}
+     * Returns an {@link EntityModel} object contained {@link HttpStatus} status and a {@link GiftCertificateDto}
      * object mapped from a  {@link GiftCertificate} gift certificates retrieved from database.
      *
      * @param id - id of {@link GiftCertificate} that has to be retrieved from database.
-     * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link GiftCertificateDto} object
+     * @return {@link EntityModel} contained both {@link HttpStatus} status and {@link GiftCertificateDto} object
      * @throws {@link ResourceNotFoundException} in case if nothing found with searched id.
      */
     @GetMapping(value = "/{id}", produces = JSON)
@@ -180,7 +178,7 @@ public class GiftCertificateController {
     public EntityModel<GiftCertificateDto> getGiftCertificate(@PathVariable(ID) long id)
             throws ResourceNotFoundException {
         GiftCertificateDto giftCertificate = giftCertificateService.findGiftCertificate(id);
-//        return new ResponseEntity<>(giftCertificateService.findGiftCertificate(id), HttpStatus.OK);
+
         return EntityModel.of(giftCertificate,
                 linkTo(methodOn(GiftCertificateController.class).getGiftCertificate(id)).withSelfRel(),
                 linkTo(methodOn(GiftCertificateController.class).deleteGiftCertificate(id))

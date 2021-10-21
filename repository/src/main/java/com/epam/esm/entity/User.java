@@ -1,13 +1,11 @@
 package com.epam.esm.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Set;
+
 
 @Getter
 @Setter
@@ -63,6 +61,13 @@ public class User implements Identifiable {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
+
+    public User(String firsName, String lastName, String email, String password) {
+        this.firsName = firsName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
 
 
     @Override

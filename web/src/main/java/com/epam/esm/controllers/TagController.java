@@ -48,10 +48,10 @@ public class TagController {
     }
 
     /**
-     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link List}
+     * Returns an {@link PagedModelDto} object contained {@link HttpStatus} status and a {@link List}
      * list of {@link Tag} tags retrieved from database.
      *
-     * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of {@link Tag} tags.
+     * @return {@link PagedModelDto} contained both {@link HttpStatus} status and {@link List} of {@link Tag} tags.
      */
     @GetMapping(produces = JSON, params = {"page"})
     @PreAuthorize("hasAuthority('tag:read')")
@@ -66,11 +66,11 @@ public class TagController {
     }
 
     /**
-     * Returns an {@link ResponseEntity} object contained {@link HttpStatus} status and a {@link Tag} object
+     * Returns an {@link EntityModel} object contained {@link HttpStatus} status and a {@link Tag} object
      * from database.
      *
      * @param id - id of {@link Tag} that has to be retrieved from database.
-     * @return {@link ResponseEntity} contained both {@link HttpStatus} status and an {@link Tag} object.
+     * @return {@link EntityModel} contained both {@link HttpStatus} status and an {@link Tag} object.
      * @throws {@link ResourceNotFoundException} in case if nothing found with searched id.
      */
     @GetMapping(value = "/{id}", produces = JSON)

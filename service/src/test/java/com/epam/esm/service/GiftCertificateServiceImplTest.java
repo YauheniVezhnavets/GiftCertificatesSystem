@@ -1,5 +1,7 @@
 package com.epam.esm.service;
 
+import com.epam.esm.entity.QGiftCertificate;
+import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.dto.GiftCertificateDto;
@@ -7,6 +9,8 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.mapper.GiftCertificateDtoMapper;
+import com.epam.esm.utils.QPredicates;
+import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,10 +24,11 @@ import java.util.*;
 
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GiftCertificateServiceImplTest {
@@ -74,53 +79,99 @@ public class GiftCertificateServiceImplTest {
         testGiftCertificateDto = Mockito.mock(GiftCertificateDto.class);
 
     }
-//
-//
-////    @Test
-//    public void methodShouldCreateGiftCertificateWithNewTagOfGiftCertificateTest() {
-//        long id = 7L;
-//        when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
-//        TEST_GIFT_CERTIFICATE.setTags(SET_OF_TUGS);
-//        when(tagRepository.findByName(anyString())).thenReturn(Optional.empty());
-//
-//        assertFalse(TEST_GIFT_CERTIFICATE.getTags().isEmpty());
-//
-//   //     when(giftCertificateRepository.save(TEST_GIFT_CERTIFICATE)).thenReturn(id);
-//
-//        giftCertificateServiceImpl.createGiftCertificate(TEST_GIFT_CERTIFICATE_DTO);
-//
-//    }
-//
-//
-//    @Test
-//    public void methodShouldCreateGiftCertificateWithExistingTagOfGiftCertificateTest() {
-//        long id = 7L;
-//        when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
-//        TEST_GIFT_CERTIFICATE.setTags(SET_OF_TUGS);
-//        when(tagRepository.findByName(anyString())).thenReturn(optionalTag);
-//
-//        assertFalse(TEST_GIFT_CERTIFICATE.getTags().isEmpty());
-//
-//   //     when(giftCertificateRepository.save(TEST_GIFT_CERTIFICATE)).thenReturn(id);
-//
-//        giftCertificateServiceImpl.createGiftCertificate(TEST_GIFT_CERTIFICATE_DTO);
-//
-//        verify(giftCertificateRepository, times(1)).save(TEST_GIFT_CERTIFICATE);
-//
-//    }
-//
-//    @Test
-//    public void methodShouldDeleteGiftCertificate() throws ResourceNotFoundException {
-//
-//        doNothing().when(giftCertificateRepository).delete(optionalGiftCertificate.get());
-//
-//        giftCertificateServiceImpl.deleteGiftCertificate(1L);
-//
-//        verify(giftCertificateRepository, times(1)).delete(optionalGiftCertificate.get());
-//
-//    }
-//
-//
+
+    @Test
+    public void methodShouldFindAllActiveGiftCertificates() {
+
+        Pageable pageAndResultPerPage = PageRequest.of(0, 1);
+        when(giftCertificateRepository.findAll(pageAndResultPerPage))
+                .thenReturn(new PageImpl<>(List.of(TEST_GIFT_CERTIFICATE)));
+        when(giftCertificateDtoMapper.mapToDto(TEST_GIFT_CERTIFICATE)).thenReturn(TEST_GIFT_CERTIFICATE_DTO);
+
+        Page<GiftCertificateDto> giftCertificates = giftCertificateServiceImpl
+                .findAllGiftCertificates(0, 1);
+
+        assertNotNull(giftCertificates);
+
+    }
+
+    @Test
+    public void methodShouldFindAllActiveGiftCertificatesByTagsCriteria() {
+
+        Set <String> tags = Set.of("Relax");
+        when(giftCertificateRepository.findByTagsIn(any(),anyLong(),any()))
+                .thenReturn(new PageImpl<>(List.of(TEST_GIFT_CERTIFICATE)));
+        when(giftCertificateDtoMapper.mapToDto(TEST_GIFT_CERTIFICATE)).thenReturn(TEST_GIFT_CERTIFICATE_DTO);
+
+        Page<GiftCertificateDto> giftCertificates = giftCertificateServiceImpl
+                .findGiftCertificatesByTags(tags, 1,1);
+
+        assertNotNull(giftCertificates);
+
+    }
+
+    @Test
+    public void methodShouldFindAllActiveGiftCertificatesByNameOrDescriptionCriteria() {
+
+        Pageable pageAndResultPerPage = PageRequest.of(0, 1);
+        Map <String,String> mapWithParameters = Map.of("giftCertificateName","Golden_Coffee");
+        Predicate predicate = QPredicates.builder().add(mapWithParameters.get("giftCertificateName"),
+                        QGiftCertificate.giftCertificate.name::containsIgnoreCase)
+                .buildAnd();
+        when(giftCertificateRepository.findAll(predicate,pageAndResultPerPage))
+                .thenReturn(new PageImpl<>(List.of(TEST_GIFT_CERTIFICATE)));
+        when(giftCertificateDtoMapper.mapToDto(TEST_GIFT_CERTIFICATE)).thenReturn(TEST_GIFT_CERTIFICATE_DTO);
+
+        Page<GiftCertificateDto> giftCertificates = giftCertificateServiceImpl
+                .findGiftCertificates(mapWithParameters, 0,1);
+
+        assertNotNull(giftCertificates);
+
+    }
+
+    @Test
+    public void methodShouldCreateGiftCertificateWithNewTagOfGiftCertificateTest() {
+
+        when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
+        TEST_GIFT_CERTIFICATE.setTags(SET_OF_TUGS);
+        when(tagRepository.findByName(anyString())).thenReturn(Optional.empty());
+
+        assertFalse(TEST_GIFT_CERTIFICATE.getTags().isEmpty());
+
+        when(giftCertificateRepository.save(TEST_GIFT_CERTIFICATE)).thenReturn(any());
+
+        giftCertificateServiceImpl.createGiftCertificate(TEST_GIFT_CERTIFICATE_DTO);
+
+    }
+
+
+    @Test
+    public void methodShouldCreateGiftCertificateWithExistingTagOfGiftCertificateTest() {
+
+        when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
+        TEST_GIFT_CERTIFICATE.setTags(SET_OF_TUGS);
+        when(tagRepository.findByName(anyString())).thenReturn(optionalTag);
+
+        assertFalse(TEST_GIFT_CERTIFICATE.getTags().isEmpty());
+
+        when(giftCertificateRepository.save(TEST_GIFT_CERTIFICATE)).thenReturn(any());
+
+        giftCertificateServiceImpl.createGiftCertificate(TEST_GIFT_CERTIFICATE_DTO);
+
+        verify(giftCertificateRepository, times(1)).save(TEST_GIFT_CERTIFICATE);
+
+    }
+
+    @Test
+    public void methodShouldDeleteGiftCertificate()  {
+
+        when(giftCertificateRepository.findById(anyLong())).thenReturn(Optional.of(TEST_GIFT_CERTIFICATE));
+
+        giftCertificateServiceImpl.deleteGiftCertificate(1L);
+
+    }
+
+
     @Test
     public void testShouldFindGiftCertificateById()  {
 
@@ -137,26 +188,26 @@ public class GiftCertificateServiceImplTest {
         verify(giftCertificateRepository).findById(TEST_ID);
 
     }
-//
-//    @Test
-//    public void testShouldUpdateGiftCertificateById()  {
-//
-//        when(giftCertificateRepository.findById(anyLong())).thenReturn(optionalGiftCertificate);
-//        when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
-//        doNothing().when(giftCertificateRepository).save(testGiftCertificate);
-//
-//        giftCertificateServiceImpl.updateGiftCertificate(1L, TEST_GIFT_CERTIFICATE_DTO);
-//
-//        verify(giftCertificateRepository, times(1)).save(any());
-//    }
-//
-//    @Test
-//    public void methodShouldReturnExceptionWhenIdNotFound()  {
-//        when(giftCertificateRepository.findById(0L)).thenReturn(Optional.empty());
-//
-//        assertThrows(ResourceNotFoundException.class, () -> {
-//
-//            giftCertificateServiceImpl.findGiftCertificate(0L);
-//        });
-//    }
+
+    @Test
+    public void testShouldUpdateGiftCertificateById()  {
+
+        when(giftCertificateRepository.findById(anyLong())).thenReturn(optionalGiftCertificate);
+        when(giftCertificateDtoMapper.map(TEST_GIFT_CERTIFICATE_DTO)).thenReturn(TEST_GIFT_CERTIFICATE);
+        when(giftCertificateRepository.save(testGiftCertificate)).thenReturn(any());
+
+        giftCertificateServiceImpl.updateGiftCertificate(1L, TEST_GIFT_CERTIFICATE_DTO);
+
+        verify(giftCertificateRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void methodShouldReturnExceptionWhenIdNotFound()  {
+        when(giftCertificateRepository.findById(0L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+
+            giftCertificateServiceImpl.findGiftCertificate(0L);
+        });
+    }
 }

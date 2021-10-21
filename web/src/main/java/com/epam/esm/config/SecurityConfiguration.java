@@ -1,7 +1,7 @@
 package com.epam.esm.config;
 
 
-import com.epam.esm.entity.Permission;
+
 import com.epam.esm.security.JwtConfigure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

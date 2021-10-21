@@ -3,7 +3,6 @@ package com.epam.esm.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.*;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -13,7 +12,6 @@ import javax.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -83,6 +81,16 @@ public class GiftCertificate implements Identifiable {
     private void onPrePersist() {
         setCreateDate(LocalDateTime.now());
         setLastUpdateDate(LocalDateTime.now());
+    }
+
+    public GiftCertificate(String name, String description, BigDecimal price,
+                           int duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
     }
 
     public GiftCertificate(long certificateId, String name, String description, BigDecimal price,

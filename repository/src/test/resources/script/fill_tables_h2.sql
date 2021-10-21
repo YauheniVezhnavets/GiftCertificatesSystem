@@ -70,7 +70,7 @@ insert into gift_certificate_tag (gift_certificate_id, tag_id)
 values (7, 4);
 
 
-insert into users (first_name, last_name, email, password) values ('Ivan', 'Ivanov', 'ivan@mail.ru', 'ivan');
+insert into users (first_name, last_name, email, password, role) values ('Ivan', 'Ivanov', 'ivan@mail.ru', 'ivan', 'ADMIN');
 insert into users (first_name, last_name, email, password) values ('Petr', 'Petrov', 'petr@mail.ru', 'petr');
 insert into users (first_name, last_name, email, password) values ('Semen', 'Semenov', 'semen@mail.ru', 'semen');
 insert into users (first_name, last_name, email, password) values ('Andrey', 'Andreev', 'andrey@mail.ru', 'andrey');
