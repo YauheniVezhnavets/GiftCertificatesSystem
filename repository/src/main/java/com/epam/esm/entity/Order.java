@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @Table(name = "user_order")
-public class Order extends RepresentationModel <Order> implements Identifiable {
+public class Order implements Identifiable {
 
     @Id
     @SequenceGenerator(

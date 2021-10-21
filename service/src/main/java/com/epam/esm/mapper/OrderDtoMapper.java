@@ -1,15 +1,12 @@
 package com.epam.esm.mapper;
 
 import com.epam.esm.dto.OrderDto;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Component
-public class OrderMapper {
+public class OrderDtoMapper {
 
     public OrderDto mapToDto(Order order) {
         OrderDto orderDto = new OrderDto();

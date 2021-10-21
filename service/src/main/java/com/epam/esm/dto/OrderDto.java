@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class OrderDto {
+public class OrderDto extends RepresentationModel <OrderDto>{
 
     private long orderId;
 

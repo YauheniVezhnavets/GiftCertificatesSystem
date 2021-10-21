@@ -32,7 +32,9 @@ CREATE TABLE if not exists users (
 	first_name VARCHAR(50)     NOT NULL ,
 	last_name  VARCHAR(50)     NOT NULL ,
 	email VARCHAR(50)          UNIQUE NOT NULL,
-	password VARCHAR(50)       NOT NULL ,
+	password VARCHAR(100)       NOT NULL ,
+	role VARCHAR(50)           DEFAULT 'USER' NOT NULL ,
+	is_active boolean          DEFAULT 'TRUE' NOT NULL,
 	PRIMARY KEY (id)
 );
 

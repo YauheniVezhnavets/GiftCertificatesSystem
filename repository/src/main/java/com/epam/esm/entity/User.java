@@ -20,40 +20,49 @@ import java.util.Set;
         @UniqueConstraint(name = "user_email_unique",columnNames = "email")
         }
 )
-public class User extends RepresentationModel<User> implements Identifiable {
+public class User implements Identifiable {
 
     @Id
     @SequenceGenerator(
-            name = "user_id_seq",
-            sequenceName = "user_id_seq",
+            name = "users_id_seq",
+            sequenceName = "users_id_seq",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "user_id_seq"
+            generator = "users_id_seq"
     )
     @Column (name = "id", updatable = false)
     private long userId;
 
     @NotBlank
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 50, message = "FirstName should have minimum 1 symbol and maximum 50")
     @Column(name = "first_name", nullable = false)
     private String firsName;
 
     @NotBlank
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 50, message = "FirstName should have minimum 1 symbol and maximum 50")
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 50, message = "Email should have minimum 3 symbols and maximum 25")
     @Column(name = "email", nullable = false)
     private String email;
 
     @NotBlank
-    @Size(min = 4, max = 50)
+    @Size(min = 3, max = 100, message = "Password should have minimum 3 symbols and maximum 100")
     @Column(name = "password", nullable = false)
     private String password;
+
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
+
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
 
 
     @Override
@@ -65,12 +74,15 @@ public class User extends RepresentationModel<User> implements Identifiable {
         User user = (User) o;
 
         if (getUserId() != user.getUserId()) return false;
+        if (isActive() != user.isActive()) return false;
         if (getFirsName() != null ? !getFirsName().equals(user.getFirsName()) : user.getFirsName() != null)
             return false;
         if (getLastName() != null ? !getLastName().equals(user.getLastName()) : user.getLastName() != null)
             return false;
         if (getEmail() != null ? !getEmail().equals(user.getEmail()) : user.getEmail() != null) return false;
-        return getPassword() != null ? getPassword().equals(user.getPassword()) : user.getPassword() == null;
+        if (getPassword() != null ? !getPassword().equals(user.getPassword()) : user.getPassword() != null)
+            return false;
+        return getRole() == user.getRole();
     }
 
     @Override
@@ -81,6 +93,8 @@ public class User extends RepresentationModel<User> implements Identifiable {
         result = 31 * result + (getLastName() != null ? getLastName().hashCode() : 0);
         result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
         result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
+        result = 31 * result + (getRole() != null ? getRole().hashCode() : 0);
+        result = 31 * result + (isActive() ? 1 : 0);
         return result;
     }
 }

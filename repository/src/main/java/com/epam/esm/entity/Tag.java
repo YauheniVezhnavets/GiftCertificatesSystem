@@ -15,8 +15,7 @@ import javax.validation.constraints.Size;
 @ToString
 @Entity
 @Table(name = "tag")
-public class Tag extends RepresentationModel<Tag> implements Identifiable {
-
+public class Tag implements Identifiable {
 
     @Id
     @SequenceGenerator(
@@ -32,7 +31,7 @@ public class Tag extends RepresentationModel<Tag> implements Identifiable {
     private long tagId;
 
     @NotBlank
-    @Size(min = 3, max = 25)
+    @Size(min = 3, max = 25, message = "tag's name should have minimum 3 symbols and maximum 25")
     @Column(name = "name", nullable = false)
     private String name;
 

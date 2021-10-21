@@ -2,14 +2,21 @@ package com.epam.esm.controllers;
 
 
 import com.epam.esm.dto.GiftCertificateDto;
+import com.epam.esm.dto.PagedModelDto;
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.dto.UserDto;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 /**
- *  The class that represents an API for basic giftCertificate-related application operations
- *  @author Yauheni Vezhnavets
+ * The class that represents an API for basic giftCertificate-related application operations
+ *
+ * @author Yauheni Vezhnavets
  **/
 
 
@@ -33,18 +44,24 @@ public class GiftCertificateController {
     private static final String JSON = "application/json";
     private static final String ID = "id";
 
-    private final GiftCertificateService <GiftCertificate> giftCertificateService;
+    private final GiftCertificateService<GiftCertificate> giftCertificateService;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService <GiftCertificate> giftCertificateService) {
+    public GiftCertificateController(GiftCertificateService<GiftCertificate> giftCertificateService) {
         this.giftCertificateService = giftCertificateService;
     }
 
     @GetMapping()
-    public ResponseEntity<List<GiftCertificateDto>> getAllGiftCertificates() {
+    @PreAuthorize("hasAuthority('giftCertificate:read')")
+    public PagedModelDto getAllGiftCertificates(
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
+            PagedResourcesAssembler<GiftCertificateDto> assembler
+    ) {
+        Page<GiftCertificateDto> giftCertificates = giftCertificateService.findAllGiftCertificates(page, size);
 
-        return new ResponseEntity<>(giftCertificateService.findAllGiftCertificates(),
-                HttpStatus.OK);
+        return new PagedModelDto(
+                assembler.toModel(giftCertificates), HttpStatus.OK);
     }
 
     /**
@@ -52,28 +69,34 @@ public class GiftCertificateController {
      * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
      * from database.The retrieved data has to fill parameters received from request.
      * All parameters are optional.
+     * <p>
+     * //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
      *
-  //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
      * @param giftCertificateName - part of a name of searched gift certificate.
-   //  * @param description - part of a description of searched gift certificate.
+     *                            //  * @param description - part of a description of searched gift certificate.
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
      * {@link GiftCertificateDto}
      */
 
     @GetMapping(value = "/search", produces = JSON)
-    public ResponseEntity<List<GiftCertificateDto>> getGiftCertificatesWithCriteria(
+    @PreAuthorize("hasAuthority('giftCertificate:read')")
+    public PagedModelDto getGiftCertificatesWithCriteria(
 
             @RequestParam(required = false) String giftCertificateName,
             @RequestParam(required = false) String description,
-            @RequestParam(defaultValue = "1") @Min(1) int page) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
+            PagedResourcesAssembler<GiftCertificateDto> assembler) {
 
         Map<String, String> mapWithParameters = new HashMap<>();
 
-            mapWithParameters.put("giftCertificateName", giftCertificateName);
-            mapWithParameters.put("description", description);
+        mapWithParameters.put("giftCertificateName", giftCertificateName);
+        mapWithParameters.put("description", description);
+        Page<GiftCertificateDto> giftCertificates = giftCertificateService.findGiftCertificates(mapWithParameters,
+                page, size);
 
-        return new ResponseEntity<>(giftCertificateService.findGiftCertificates(mapWithParameters,page),
-                HttpStatus.OK);
+        return new PagedModelDto(
+                assembler.toModel(giftCertificates), HttpStatus.OK);
     }
 
 
@@ -82,25 +105,25 @@ public class GiftCertificateController {
      * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
      * from database.The retrieved data has to fill parameters received from request.
      * All parameters are optional.
+     * <p>
+     * //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
      *
-     //   * @param tagName - name of a {@link Tag} tag should be contained in a gift certificate.
-
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
      * {@link GiftCertificateDto}
      */
 
     @GetMapping(value = "/tags", produces = JSON)
-    public ResponseEntity<List<GiftCertificateDto>> getGiftCertificatesByTags(
-            @RequestParam (name ="tagName") Set <String> tagsName
-    )
-//            ,
-//            @RequestParam(defaultValue = "1") @Min(1) int page)
-    {
+    @PreAuthorize("hasAuthority('giftCertificate:read')")
+    public PagedModelDto getGiftCertificatesByTags(
+            @RequestParam(name = "tagName") Set<String> tagsName,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
+            PagedResourcesAssembler<GiftCertificateDto> assembler) {
+        Page<GiftCertificateDto> giftCertificates =
+                giftCertificateService.findGiftCertificatesByTags(tagsName, page, size);
 
-        return new ResponseEntity<>(giftCertificateService.findGiftCertificatesByTags(tagsName
-    //            ,page
-        ),
-                HttpStatus.OK);
+        return new PagedModelDto(
+                assembler.toModel(giftCertificates), HttpStatus.OK);
     }
 
     /**
@@ -108,31 +131,39 @@ public class GiftCertificateController {
      * {@link GiftCertificateDto} mapped from a list of {@link GiftCertificate} gift certificates retrieved
      * from database.The retrieved data has to fill parameters received from request.
      * All parameters are optional.
+     * <p>
+     * //  * @param sortByName - sort of the retrieved gift certificates by name.
      *
-   //  * @param sortByName - sort of the retrieved gift certificates by name.
      * @param sortByDate - sort of the retrieved gift certificates by creation date.
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of
      * {@link GiftCertificateDto}
      */
 
     @GetMapping(value = "/sort", produces = JSON)
-    public ResponseEntity<List<GiftCertificateDto>> getGiftCertificatesAndSort(
+    @PreAuthorize("hasAuthority('giftCertificate:read')")
+    public PagedModelDto getGiftCertificatesAndSort(
 
             @RequestParam(required = false) String sortByName,
             @RequestParam(required = false) String sortByDate,
-            @RequestParam(defaultValue = "1") @Min(1) int page)
-                   {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
+            PagedResourcesAssembler<GiftCertificateDto> assembler) {
 
         Map<String, String> mapWithParameters = new HashMap<>();
 
-        if (sortByName!=null) {
+        if (sortByName != null) {
             mapWithParameters.put("sortByName", sortByName);
         }
-        if (sortByDate!=null) {
+        if (sortByDate != null) {
             mapWithParameters.put("sortByDate", sortByDate);
         }
-        return new ResponseEntity<>(giftCertificateService.findGiftCertificatesAndSort(mapWithParameters),
-                HttpStatus.OK);
+//        return new ResponseEntity<>(
+        Page<GiftCertificateDto> giftCertificates = giftCertificateService.
+                findGiftCertificatesAndSort(mapWithParameters,page,size);
+//                HttpStatus.OK);
+
+        return new PagedModelDto(
+                assembler.toModel(giftCertificates), HttpStatus.OK);
     }
 
 
@@ -145,26 +176,33 @@ public class GiftCertificateController {
      * @throws {@link ResourceNotFoundException} in case if nothing found with searched id.
      */
     @GetMapping(value = "/{id}", produces = JSON)
-    public ResponseEntity<GiftCertificateDto> getGiftCertificate(@PathVariable(ID) long id)
+    @PreAuthorize("hasAuthority('giftCertificate:read')")
+    public EntityModel<GiftCertificateDto> getGiftCertificate(@PathVariable(ID) long id)
             throws ResourceNotFoundException {
-        return new ResponseEntity<>(giftCertificateService.findGiftCertificate(id), HttpStatus.OK);
+        GiftCertificateDto giftCertificate = giftCertificateService.findGiftCertificate(id);
+//        return new ResponseEntity<>(giftCertificateService.findGiftCertificate(id), HttpStatus.OK);
+        return EntityModel.of(giftCertificate,
+                linkTo(methodOn(GiftCertificateController.class).getGiftCertificate(id)).withSelfRel(),
+                linkTo(methodOn(GiftCertificateController.class).deleteGiftCertificate(id))
+                        .withRel("deleteGiftCertificate"));
     }
 
     /**
      * Creates new {@link GiftCertificate} object and returns an {@link ResponseEntity} object contained
      * {@link HttpStatus} status and {@link GiftCertificateDto} mapped from passed {@link GiftCertificate} object.
+     *
      * @param giftCertificateDto - data for creating new {@link GiftCertificate} object.
      * @return {@link ResponseEntity} contained {@link HttpStatus} status.
      * @throws {@link InvalidFieldException} in case if invalid data passed in request to construct
-     * a {@link GiftCertificate} object.
-     *
+     *                a {@link GiftCertificate} object.
      */
 
     @PostMapping(consumes = JSON)
+    @PreAuthorize("hasAuthority('giftCertificate:write')")
     public ResponseEntity createGiftCertificate(@Valid @RequestBody GiftCertificateDto giftCertificateDto,
                                                 BindingResult bindingResult)
             throws InvalidFieldException {
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             throw new InvalidFieldException();
         }
 
@@ -176,14 +214,15 @@ public class GiftCertificateController {
      * Updates {@link GiftCertificate} object by id and returns an {@link ResponseEntity} object contained
      * {@link HttpStatus} status and {@link GiftCertificateDto} mapped from {@link GiftCertificate} object with id.
      *
-     * @param id - id of {@link GiftCertificate} object to be updated.
+     * @param id                 - id of {@link GiftCertificate} object to be updated.
      * @param giftCertificateDto - new data for updating an {@link GiftCertificate} object to be updated.
      * @return {@link ResponseEntity} contained {@link HttpStatus} status.
      * @throws {@link InvalidFieldException} in case if invalid data passed in request to update
-     * a {@link GiftCertificate} object.
+     *                a {@link GiftCertificate} object.
      * @throws {@link ResourceNotFoundException} in case if nothing found with searched id.
      */
     @PatchMapping(value = "/{id}", consumes = JSON)
+    @PreAuthorize("hasAuthority('giftCertificate:write')")
     public ResponseEntity updateGiftCertificate(@PathVariable(ID) long id,
                                                 @Valid @RequestBody GiftCertificateDto giftCertificateDto)
             throws ResourceNotFoundException, InvalidFieldException {
@@ -202,6 +241,7 @@ public class GiftCertificateController {
      */
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('giftCertificate:write')")
     public ResponseEntity deleteGiftCertificate(@PathVariable(ID) long id) throws ResourceNotFoundException {
         giftCertificateService.deleteGiftCertificate(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);

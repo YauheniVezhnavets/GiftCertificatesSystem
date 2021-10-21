@@ -23,7 +23,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "gift_certificate")
-public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Identifiable {
+public class GiftCertificate implements Identifiable {
 
     @Id
     @SequenceGenerator(
@@ -39,21 +39,21 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     private long certificateId;
 
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 50, message = "Name should have minimum 3 symbols and maximum 50")
     @Column(name = "name")
     private String name;
 
     @NotBlank
-    @Size(min = 5, max = 100)
+    @Size(min = 5, max = 100, message = "Description should have minimum 5 symbols and maximum 100")
     @Column(name = "description")
     private String description;
 
-    @DecimalMin(value = "1.0")
+    @DecimalMin(value = "1.0", message = "Price should be minimum 1")
     @NotNull
     @Column(name = "price")
     private BigDecimal price;
 
-    @Min(1)
+    @Min(value = 1, message = "Duration should be minimum 1")
     @Column(name = "duration")
     private int duration;
 

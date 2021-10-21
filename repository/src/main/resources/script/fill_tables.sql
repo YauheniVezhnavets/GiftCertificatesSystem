@@ -62,11 +62,11 @@ insert into gift_certificate_tag (gift_certificate_id, tag_id)
 values (7, 4);
 
 
-insert into users (first_name, last_name, email, password) values ('Ivan', 'Ivanov', 'ivan@mail.ru', 'ivan');
-insert into users (first_name, last_name, email, password) values ('Petr', 'Petrov', 'petr@mail.ru', 'petr');
-insert into users (first_name, last_name, email, password) values ('Semen', 'Semenov', 'semen@mail.ru', 'semen');
-insert into users (first_name, last_name, email, password) values ('Andrey', 'Andreev', 'andrey@mail.ru', 'andrey');
-insert into users (first_name, last_name, email, password) values ('Nikolay', 'Nikolaev', 'nikolay@mail.ru', 'nikolay');
+insert into users (first_name, last_name, email, password) values ('Ivan', 'Ivanov', 'ivan@mail.ru', '$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O');
+insert into users (first_name, last_name, email, password) values ('Petr', 'Petrov', 'petr@mail.ru', '$2a$10$Dq5gs/XDWw/Vr5.EUSC.oOlJMF3HDmXw8fVS7JqNdZuKaps65BPEC');
+insert into users (first_name, last_name, email, password) values ('Semen', 'Semenov', 'semen@mail.ru', '$2a$10$Z69Z/SMDE2uFFoE2F9n/jOvlwo39g5XmeMygBFXeA3.THeL/d32SS');
+insert into users (first_name, last_name, email, password) values ('Andrey', 'Andreev', 'andrey@mail.ru', '$2a$10$LpHG0WBEUs/g/A0TQBoY6uF/2W.9PkUOjuct2HZlQmuPRXBzzxJba');
+insert into users (first_name, last_name, email, password) values ('Nikolay', 'Nikolaev', 'nikolay@mail.ru', '$2a$10$NPEY4uaUU0WwidZcJIFg4.MBT8FtD12L7bSIkcg95fmyfO6jTag32');
 
 
 INSERT INTO user_order (cost, purchase_date, user_id, certificate_id) VALUES (100, '2021-09-23T03:12:15.156Z', 1, 2);
