@@ -41,6 +41,11 @@ public class Tag implements Identifiable {
         this.name = name;
     }
 
+    public Tag(long tagId, String name) {
+        this.tagId = tagId;
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

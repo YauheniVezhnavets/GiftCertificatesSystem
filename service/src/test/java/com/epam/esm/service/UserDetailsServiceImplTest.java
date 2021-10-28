@@ -1,7 +1,6 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.UserDto;
-import com.epam.esm.entity.Role;
 import com.epam.esm.entity.SecurityUser;
 import com.epam.esm.entity.User;
 import com.epam.esm.mapper.UserMapper;
@@ -21,7 +20,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -41,10 +39,10 @@ public class UserDetailsServiceImplTest {
     private UserDetailServiceImpl userDetailServiceImpl;
 
     private final User expectedUser = new User (1L, "Ivan", "Ivanov", "ivan@mail.ru",
-            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O", Role.USER,true);
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
 
     private final UserDto expectedUserDto = new UserDto (1L, "Ivan", "Ivanov", "ivan@mail.ru",
-            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O",Role.USER,true);
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
 
     private final SecurityUser securityUser = new SecurityUser("ivan@mail.ru",
             "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O", null, true);

@@ -1,7 +1,5 @@
 package com.epam.esm.config;
 
-
-
 import com.epam.esm.security.JwtConfigure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,11 +34,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .antMatchers("/auth/login").permitAll()
                 .antMatchers("/auth/register").permitAll()
+                .antMatchers("/api/v1/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
-//                .oauth2Login()
-//                .and()
                 .apply(jwtConfigure);
     }
 

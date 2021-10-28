@@ -4,6 +4,8 @@ import com.epam.esm.entity.Role;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,17 +23,16 @@ public class UserDto extends RepresentationModel <UserDto> {
 
     private String password;
 
-    private Role role;
+    private Set<Role> roles;
 
     private boolean isActive = true;
 
-    public UserDto(String firsName, String lastName, String email, String password, Role role, boolean isActive) {
+    public UserDto(long userId, String firsName, String lastName, String email, String password) {
+        this.userId = userId;
         this.firsName = firsName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.role = role;
-        this.isActive = isActive;
     }
 
     @Override
@@ -51,7 +52,7 @@ public class UserDto extends RepresentationModel <UserDto> {
         if (getEmail() != null ? !getEmail().equals(userDto.getEmail()) : userDto.getEmail() != null) return false;
         if (getPassword() != null ? !getPassword().equals(userDto.getPassword()) : userDto.getPassword() != null)
             return false;
-        return getRole() == userDto.getRole();
+        return getRoles() != null ? getRoles().equals(userDto.getRoles()) : userDto.getRoles() == null;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class UserDto extends RepresentationModel <UserDto> {
         result = 31 * result + (getLastName() != null ? getLastName().hashCode() : 0);
         result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
         result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
-        result = 31 * result + (getRole() != null ? getRole().hashCode() : 0);
+        result = 31 * result + (getRoles() != null ? getRoles().hashCode() : 0);
         result = 31 * result + (isActive() ? 1 : 0);
         return result;
     }

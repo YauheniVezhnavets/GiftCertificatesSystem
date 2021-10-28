@@ -54,7 +54,6 @@ public class TagController {
      * @return {@link PagedModelDto} contained both {@link HttpStatus} status and {@link List} of {@link Tag} tags.
      */
     @GetMapping(produces = JSON, params = {"page"})
-    @PreAuthorize("hasAuthority('tag:read')")
     public PagedModelDto getTags(@RequestParam @Min(0) int page,
                                  @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
                                  PagedResourcesAssembler<TagDto> assembler) {
@@ -74,7 +73,6 @@ public class TagController {
      * @throws {@link ResourceNotFoundException} in case if nothing found with searched id.
      */
     @GetMapping(value = "/{id}", produces = JSON)
-    @PreAuthorize("hasAuthority('tag:read')")
     public EntityModel<TagDto> getTag(@PathVariable(ID) long id) throws ResourceNotFoundException {
         TagDto tag = tagService.findTag(id);
 

@@ -209,10 +209,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
     }
 
     private List<GiftCertificate> checkForActiveGiftCertificates(Page<GiftCertificate> giftCertificates) {
-        List<GiftCertificate> activeGiftCertificates = new ArrayList<>();
+        return giftCertificates.stream().filter(GiftCertificate::isActive).collect(Collectors.toList());
 
-        giftCertificates.stream().filter(GiftCertificate::isActive)
-                .map(activeGiftCertificates::add).collect(Collectors.toList());
-        return activeGiftCertificates;
     }
 }

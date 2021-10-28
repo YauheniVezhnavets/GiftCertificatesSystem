@@ -58,7 +58,6 @@ public class UserController {
      * @return {@link ResponseEntity} contained both {@link HttpStatus} status and {@link List} of {@link User} users.
      */
     @GetMapping(produces = JSON, params = {"page"})
-    @PreAuthorize("hasAuthority('user:read')")
     public PagedModelDto getUsers( @RequestParam(defaultValue = "1") @Min(1) int page,
                                                 @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
                                                 PagedResourcesAssembler<UserDto> assembler) {
@@ -77,7 +76,6 @@ public class UserController {
      */
 
     @GetMapping(value = "/{userId}", produces = JSON)
-    @PreAuthorize("hasAuthority('user:read')")
     public EntityModel<UserDto> getUser(@PathVariable(USER_ID) long id) throws ResourceNotFoundException {
         UserDto userDto = userService.findUser(id);
 
@@ -92,7 +90,6 @@ public class UserController {
      *
      */
     @GetMapping(value = "/{userId}/orders", produces = JSON)
-    @PreAuthorize("hasAuthority('order:read')")
     public PagedModelDto getOrders(@PathVariable(USER_ID) long id,
                                                     @RequestParam @Min(1) int page,
                                                     @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
@@ -106,7 +103,6 @@ public class UserController {
      * from database.
      */
     @GetMapping(value ="/{userId}/orders/{certificateId}", produces = JSON)
-    @PreAuthorize("hasAuthority('order:read')")
     public ResponseEntity <OrderDto> getOrder( @PathVariable (USER_ID) long userId,
                                     @PathVariable (GIFT_CERTIFICATE_ID) long giftCertificateId){
         OrderDto orderDto = orderService.findOrder(userId,giftCertificateId);
@@ -125,7 +121,6 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/orders/tags/popular")
-    @PreAuthorize("hasAuthority('tag:read')")
     public ResponseEntity <TagDto> findMostUsedTagOfUserWithHighestCostOfAllOrders(@PathVariable (USER_ID) long userId) {
         TagDto tag = tagService.findMostUsedTagOfUserWithHighestCostOfAllOrders(userId);
 

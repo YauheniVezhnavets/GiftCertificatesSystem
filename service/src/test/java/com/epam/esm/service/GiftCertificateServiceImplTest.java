@@ -60,7 +60,7 @@ public class GiftCertificateServiceImplTest {
             LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER),
             LocalDateTime.parse("2021-08-31T06:12:15.156Z", FORMATTER));
 
-    private Set <Tag> SET_OF_TUGS = Set.of(new Tag(1L,"Relax", true), new Tag (2L, "Sport",true));
+    private Set <Tag> SET_OF_TUGS = Set.of(new Tag(1L,"Relax" ), new Tag (2L, "Sport"));
 
     private GiftCertificateDto TEST_GIFT_CERTIFICATE_DTO = new GiftCertificateDto(1L,
             "Golden_Coffee", "Taste our best coffee.", new BigDecimal(30.00), 30,

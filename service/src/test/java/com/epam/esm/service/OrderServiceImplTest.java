@@ -154,18 +154,6 @@ public class OrderServiceImplTest {
         });
     }
 
-    @Test
-    public void methodShouldThrowExceptionWhenUserNotFoundInMethodCreateOrder() {
-
-
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> {
-
-            orderServiceImpl.createOrder(1,1);
-
-        });
-    }
 
     @Test
     public void methodShouldThrowExceptionWhenUserNotFoundInMethodFindOrder() {

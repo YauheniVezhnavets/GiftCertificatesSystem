@@ -42,7 +42,7 @@ public class GiftCertificate implements Identifiable {
     private String name;
 
     @NotBlank
-    @Size(min = 5, max = 100, message = "Description should have minimum 5 symbols and maximum 100")
+    @Size(min = 5, max = 200, message = "Description should have minimum 5 symbols and maximum 200")
     @Column(name = "description")
     private String description;
 

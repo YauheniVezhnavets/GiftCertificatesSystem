@@ -36,7 +36,8 @@ public class OrderServiceImpl implements OrderService {
         Order newOrder = new Order();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
-            newOrder.setUser(optionalUser.get());
+            newOrder.setUser(optionalUser.orElseThrow(()
+                    -> new ResourceNotFoundException(giftCertificateId, "Gift certificate with this id not found")));
             Optional<GiftCertificate> optionalGiftCertificate = giftCertificateRepository.findById(giftCertificateId);
             if (optionalGiftCertificate.isPresent()) {
                 newOrder.setCertificate(optionalGiftCertificate.get());
@@ -44,8 +45,6 @@ public class OrderServiceImpl implements OrderService {
             } else {
                 throw new ResourceNotFoundException(giftCertificateId, "Gift certificate with this id not found");
             }
-        } else {
-            throw new ResourceNotFoundException(userId, "User with this id not found");
         }
         orderRepository.save(newOrder);
     }

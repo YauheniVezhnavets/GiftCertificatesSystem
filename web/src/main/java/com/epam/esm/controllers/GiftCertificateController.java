@@ -50,7 +50,6 @@ public class GiftCertificateController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAuthority('giftCertificate:read')")
     public PagedModelDto getAllGiftCertificates(
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
@@ -77,7 +76,6 @@ public class GiftCertificateController {
      */
 
     @GetMapping(value = "/search", produces = JSON)
-    @PreAuthorize("hasAuthority('giftCertificate:read')")
     public PagedModelDto getGiftCertificatesWithCriteria(
 
             @RequestParam(required = false) String giftCertificateName,
@@ -111,7 +109,6 @@ public class GiftCertificateController {
      */
 
     @GetMapping(value = "/tags", produces = JSON)
-    @PreAuthorize("hasAuthority('giftCertificate:read')")
     public PagedModelDto getGiftCertificatesByTags(
             @RequestParam(name = "tagName") Set<String> tagsName,
             @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -138,7 +135,6 @@ public class GiftCertificateController {
      */
 
     @GetMapping(value = "/sort", produces = JSON)
-    @PreAuthorize("hasAuthority('giftCertificate:read')")
     public PagedModelDto getGiftCertificatesAndSort(
 
             @RequestParam(required = false) String sortByName,
@@ -174,7 +170,6 @@ public class GiftCertificateController {
      * @throws {@link ResourceNotFoundException} in case if nothing found with searched id.
      */
     @GetMapping(value = "/{id}", produces = JSON)
-    @PreAuthorize("hasAuthority('giftCertificate:read')")
     public EntityModel<GiftCertificateDto> getGiftCertificate(@PathVariable(ID) long id)
             throws ResourceNotFoundException {
         GiftCertificateDto giftCertificate = giftCertificateService.findGiftCertificate(id);

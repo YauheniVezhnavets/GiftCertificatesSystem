@@ -1,7 +1,6 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.UserDto;
-import com.epam.esm.entity.Role;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.mapper.UserDtoMapper;
 import com.epam.esm.repository.UserRepository;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,16 +52,16 @@ public class UserServiceImplTest {
     }
 
     private final User expectedUser = new User (1L, "Ivan", "Ivanov", "ivan@mail.ru",
-            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O",Role.USER,true);
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
 
     private final User newUser = new User (7L, "test", "testov", "test@mail.ru",
-            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O",Role.USER,true);
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
 
     private final UserDto expectedUserDto = new UserDto (1L, "Ivan", "Ivanov", "ivan@mail.ru",
-            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O",Role.USER,true);
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
 
     private final UserDto newUserDto = new UserDto (7L, "test", "testov", "test@mail.ru",
-            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O",Role.USER,true);
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
 
     @Test
     public void methodShouldReturnUsers() {
