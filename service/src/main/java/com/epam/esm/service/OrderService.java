@@ -1,11 +1,9 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.OrderDto;
-import com.epam.esm.entities.Order;
-import com.epam.esm.exception.ResourceNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
+import com.epam.esm.entity.Order;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 
 /**
  * This interface represents Service implementation that connected controller with Data Access Object.
@@ -29,7 +27,7 @@ public interface OrderService <T extends Order> {
      * This method return existing orders connected with user.
      * @return list of{@link OrderDto}
      */
-    List<OrderDto> findOrders (int currentPage, long userId);
+    Page <OrderDto> findOrders (int currentPage, int pageSize, long userId);
 
 
     /**

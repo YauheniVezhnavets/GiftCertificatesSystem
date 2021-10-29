@@ -1,9 +1,11 @@
 package com.epam.esm.service;
 
-import com.epam.esm.entities.User;
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.dto.UserDto;
+import com.epam.esm.entity.User;
 import com.epam.esm.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 
 
 /**
@@ -15,23 +17,40 @@ import java.util.List;
  */
 
 
-public interface UserService <T extends User> {
+public interface UserService<T extends User> {
 
 
     /**
      * This method return all existing users.
      *
-     * @return list of{@link User}
+     * @return list of{@link UserDto}
      */
-    List<User> findUsers(int currentPage);
+    Page <UserDto> findUsers(int currentPage, int pageSize);
 
 
     /**
      * This method return user by his id.
      *
+     * @return {@link UserDto}
+     * @throws  {@link ResourceNotFoundException} in case if user not found with searched id.
+     */
+    UserDto findUser(long userId) throws ResourceNotFoundException;
+
+
+    /**
+     * This method return user by his email.
+     *
      * @return {@link User}
      * @throws  {@link ResourceNotFoundException} in case if user not found with searched id.
      */
-    User findUser(long userId) throws ResourceNotFoundException;
 
+    User findUserByEmail(String email) throws ResourceNotFoundException;
+
+
+
+    /**
+     * This method register new User.
+     *
+     */
+    void registerUser(UserDto userDto);
 }

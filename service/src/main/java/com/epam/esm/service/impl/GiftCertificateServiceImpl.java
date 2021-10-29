@@ -1,55 +1,133 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.dao.TagDao;
+import com.epam.esm.entity.QGiftCertificate;
+import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.repository.TagRepository;
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.entities.GiftCertificate;
-import com.epam.esm.entities.Tag;
+import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.mapper.GiftCertificateDtoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.epam.esm.utils.QPredicates;
+import com.querydsl.core.types.Predicate;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+
+import javax.transaction.Transactional;
 import java.util.*;
+
 import java.util.stream.Collectors;
 
-@Service
+@Service("giftCertificateService")
+@AllArgsConstructor
 public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCertificate> {
 
-    private final GiftCertificateDao giftCertificateDao;
-    private final TagDao tagDao;
+    private final String NAME = "sortByName";
+    private final String CREATE_DATE = "sortByDate";
+
+    private final GiftCertificateRepository giftCertificateRepository;
+    private final TagRepository tagRepository;
     private final GiftCertificateDtoMapper giftCertificateDtoMapper;
 
 
-    @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, TagDao tagDao,
-                                      GiftCertificateDtoMapper giftCertificateDtoMapper) {
-        this.giftCertificateDao = giftCertificateDao;
-        this.tagDao = tagDao;
-        this.giftCertificateDtoMapper = giftCertificateDtoMapper;
-    }
+    @Override
+    public Page<GiftCertificateDto> findAllGiftCertificates(int currentPage, int pageSize) {
+        Pageable pageAndResultPerPage = PageRequest.of(currentPage, pageSize);
+        Page <GiftCertificate> giftCertificates = giftCertificateRepository.findAll(pageAndResultPerPage);
+        List<GiftCertificate> activeGiftCertificates = checkForActiveGiftCertificates(giftCertificates);
 
+        List<GiftCertificateDto> activeDtoGiftCertificates = activeGiftCertificates.stream()
+                .map(giftCertificateDtoMapper::mapToDto).
+                collect(Collectors.toList());
+
+        return new PageImpl<>(activeDtoGiftCertificates);
+    }
 
     @Override
-    public List<GiftCertificateDto> findGiftCertificates(Set<String> tagsName, Map<String, String> mapWithParameters,
-                                                         int currentPage) {
+    public Page<GiftCertificateDto> findGiftCertificates(Map<String, String> mapWithParameters,
+                                                         int currentPage, int pageSize) {
+        Pageable pageAndResultPerPage = PageRequest.of(currentPage, pageSize);
 
+        Predicate predicate = QPredicates.builder().add(mapWithParameters.get("giftCertificateName"),
+                        QGiftCertificate.giftCertificate.name::containsIgnoreCase)
+                .add(mapWithParameters.get("description"),
+                        QGiftCertificate.giftCertificate.description::containsIgnoreCase)
+                .buildAnd();
 
-        List<GiftCertificate> sortedGiftCertificates = giftCertificateDao.findGiftCertificates(mapWithParameters,
-                tagsName, currentPage);
+        Page<GiftCertificate> sortedGiftCertificates = giftCertificateRepository.findAll(predicate, pageAndResultPerPage);
 
-        return sortedGiftCertificates.stream().distinct().map(giftCertificateDtoMapper::mapToDto).
+        List<GiftCertificate> activeGiftCertificates = checkForActiveGiftCertificates(sortedGiftCertificates);
+
+        List<GiftCertificateDto> activeDtoGiftCertificates = activeGiftCertificates.stream()
+                .map(giftCertificateDtoMapper::mapToDto).
                 collect(Collectors.toList());
+
+        return new PageImpl<>(activeDtoGiftCertificates);
     }
+
+    @Override
+    public Page<GiftCertificateDto> findGiftCertificatesByTags(Set<String> tagsName, int currentPage, int pageSize) {
+
+        Pageable pageAndResultPerPage = PageRequest.of(currentPage, pageSize);
+        Page<GiftCertificate> sortedGiftCertificates = giftCertificateRepository.findByTagsIn(tagsName,
+                tagsName.size(),pageAndResultPerPage);
+
+        List<GiftCertificate> activeGiftCertificates = checkForActiveGiftCertificates(sortedGiftCertificates);
+
+        List<GiftCertificateDto> activeDtoGiftCertificates = activeGiftCertificates.stream()
+                .map(giftCertificateDtoMapper::mapToDto).
+                collect(Collectors.toList());
+
+        return new PageImpl<>(activeDtoGiftCertificates);
+    }
+
+
+    public Page<GiftCertificateDto> findGiftCertificatesAndSort(Map <String,String> sortNames,
+            int currentPage, int pageSize) {
+        List<Sort.Order> ordersTypes = new ArrayList<>();
+
+        if(sortNames.containsKey(NAME)){
+            if (sortNames.get(NAME).equalsIgnoreCase("ASC")){
+                ordersTypes.add(new Sort.Order(Sort.Direction.ASC, "name"));
+            }
+            ordersTypes.add(new Sort.Order(Sort.Direction.DESC, "name"));
+        }
+
+        if(sortNames.containsKey(CREATE_DATE)){
+            if (sortNames.get(CREATE_DATE).equalsIgnoreCase("ASC")){
+                ordersTypes.add(new Sort.Order(Sort.Direction.ASC, "lastUpdateDate"));
+            }
+            ordersTypes.add(new Sort.Order(Sort.Direction.DESC, "lastUpdateDate"));
+        }
+        Sort sortType = Sort.by(ordersTypes);
+        Pageable pageAndResultPerPage = PageRequest.of(currentPage, pageSize,sortType);
+
+       Page <GiftCertificate> sortedGiftCertificates = giftCertificateRepository.findAll(pageAndResultPerPage);
+
+
+        List<GiftCertificate> activeGiftCertificates = checkForActiveGiftCertificates(sortedGiftCertificates);
+
+        List<GiftCertificateDto> activeDtoGiftCertificates = activeGiftCertificates.stream()
+                .map(giftCertificateDtoMapper::mapToDto).
+                collect(Collectors.toList());
+
+        return new PageImpl<>(activeDtoGiftCertificates);
+    }
+
 
     @Override
     public GiftCertificateDto findGiftCertificate(long id) throws ResourceNotFoundException {
 
-        GiftCertificate giftCertificate = giftCertificateDao.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException(id));
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException(id, "GiftCertificate with this id not found"));
+
+        if (!giftCertificate.isActive()) {
+            throw new ResourceNotFoundException(id,"GiftCertificate with this id not active");
+        }
 
         return giftCertificateDtoMapper.mapToDto(giftCertificate);
     }
@@ -66,32 +144,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         Set<Tag> tags = createCertificateTagRelation(giftCertificate);
         giftCertificate.setTags(tags);
 
-        giftCertificateDao.create(giftCertificate);
+        giftCertificateRepository.save(giftCertificate);
     }
 
     @Override
     @Transactional
     public void deleteGiftCertificate(long id) throws ResourceNotFoundException {
 
-        if (giftCertificateDao.findById(id).isEmpty()) {
-            throw new ResourceNotFoundException(id);
+        if (giftCertificateRepository.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException(id, "GiftCertificate with this id not found");
         }
-        GiftCertificate giftCertificate = giftCertificateDao.findById(id).get();
-        giftCertificateDao.delete(giftCertificate);
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(id).get();
+        giftCertificate.setActive(false);
     }
 
     @Override
     @Transactional
     public void updateGiftCertificate(long id, GiftCertificateDto giftCertificateDto) {
 
-        GiftCertificate currentGiftCertificate = giftCertificateDao.findById(id).
-                orElseThrow((() -> new ResourceNotFoundException(id)));
+        GiftCertificate currentGiftCertificate = giftCertificateRepository.findById(id).
+                orElseThrow((() -> new ResourceNotFoundException(id, "GiftCertificate with this id not found")));
 
         GiftCertificate updatedGiftCertificate = giftCertificateDtoMapper.map(giftCertificateDto);
 
         updateFieldsInGiftCertificate(currentGiftCertificate, updatedGiftCertificate);
 
-        giftCertificateDao.update(currentGiftCertificate);
+        giftCertificateRepository.save(currentGiftCertificate);
     }
 
     private void updateFieldsInGiftCertificate(GiftCertificate currentGiftCertificate,
@@ -118,7 +196,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
         Set<Tag> currentTags = certificate.getTags();
         Set<Tag> entityTags = new HashSet<>();
         for (Tag tag : currentTags) {
-            Optional<Tag> optionalTag = tagDao.findByName(tag.getName());
+            Optional<Tag> optionalTag = tagRepository.findByName(tag.getName());
             if (optionalTag.isPresent()) {
                 Tag existingTag = optionalTag.get();
                 entityTags.add(existingTag);
@@ -128,5 +206,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService<GiftCe
             }
         }
         return entityTags;
+    }
+
+    private List<GiftCertificate> checkForActiveGiftCertificates(Page<GiftCertificate> giftCertificates) {
+        return giftCertificates.stream().filter(GiftCertificate::isActive).collect(Collectors.toList());
+
     }
 }

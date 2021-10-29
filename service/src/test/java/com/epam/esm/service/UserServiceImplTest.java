@@ -1,8 +1,10 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.UserDao;
-import com.epam.esm.entities.User;
+import com.epam.esm.dto.UserDto;
 import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.mapper.UserDtoMapper;
+import com.epam.esm.repository.UserRepository;
+import com.epam.esm.entity.User;
 import com.epam.esm.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -11,14 +13,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -28,8 +34,12 @@ public class UserServiceImplTest {
     private static User testUser;
     private static Optional<User> optionalUser;
 
+
     @Mock
-    private UserDao userDao;
+    private UserRepository userRepository;
+
+    @Mock
+    private UserDtoMapper userDtoMapper;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
@@ -41,13 +51,26 @@ public class UserServiceImplTest {
         optionalUser = Optional.of(testUser);
     }
 
+    private final User expectedUser = new User (1L, "Ivan", "Ivanov", "ivan@mail.ru",
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
+
+    private final User newUser = new User (7L, "test", "testov", "test@mail.ru",
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
+
+    private final UserDto expectedUserDto = new UserDto (1L, "Ivan", "Ivanov", "ivan@mail.ru",
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
+
+    private final UserDto newUserDto = new UserDto (7L, "test", "testov", "test@mail.ru",
+            "$2a$10$loNUxszEeh6zePwybYSHl.yzjhWQJDO6OfTtbdOspuDOYRnAXPT.O");
 
     @Test
-    public void methodShouldReturnListOfUsers() {
+    public void methodShouldReturnUsers() {
 
-        when(userDao.findAll(1)).thenReturn(new ArrayList<>());
+        Pageable pageAndResultPerPage = PageRequest.of(0, 1);
+        when(userRepository.findAll(pageAndResultPerPage)).thenReturn(new PageImpl<>(List.of(expectedUser)));
+        when(userDtoMapper.mapToDto(expectedUser)).thenReturn(expectedUserDto);
 
-        List<User> users = userServiceImpl.findUsers(1);
+        Page <UserDto> users = userServiceImpl.findUsers(0,1);
 
         assertNotNull(users);
     }
@@ -55,23 +78,60 @@ public class UserServiceImplTest {
     @Test
     public void methodShouldReturnUser() throws ResourceNotFoundException {
 
-        User expected = new User (1L, "Ivan","Ivanov","ivan@mail.ru","ivan");
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(expectedUser));
+        when(userDtoMapper.mapToDto(expectedUser)).thenReturn(expectedUserDto);
 
-        when(userDao.findById(anyLong())).thenReturn(Optional.of(expected));
+        UserDto userDto = userServiceImpl.findUser(1L);
 
-        User user = userServiceImpl.findUser(1L);
+        assertEquals(userDto, expectedUserDto);
+    }
 
-        assertEquals(user, expected);
+    @Test
+    public void methodShouldReturnUserByEmail(){
+
+        String email = "ivan@mail.ru";
+
+        when(userRepository.findByEmail(any())).thenReturn(Optional.of(expectedUser));
+
+        User actualUser = userServiceImpl.findUserByEmail(email);
+
+        assertEquals(actualUser, expectedUser);
     }
 
 
+
     @Test
-    public void methodShouldReturnException() throws ResourceNotFoundException {
-        when(userDao.findById(0L)).thenReturn(Optional.empty());
+    public void methodShouldReturnExceptionWhenUserByIdNotFound(){
+        String notExistingEmail = "notExist@mail.ru";
 
-        assertThrows(ResourceNotFoundException.class, () -> {
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
 
-            userServiceImpl.findUser(0L);
-        });
+        assertThrows(ResourceNotFoundException.class, () -> { userServiceImpl.findUserByEmail(notExistingEmail);});
+
+        verify(userRepository).findByEmail(notExistingEmail);
+    }
+
+    @Test
+    public void methodShouldCreateNewUser(){
+
+        when(userDtoMapper.map(any())).thenReturn(newUser);
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(userRepository.save(newUser)).thenReturn(any());
+
+        userServiceImpl.registerUser(newUserDto);
+
+        verify(userRepository).save(newUser);
+
+    }
+
+    @Test
+    public void methodShouldReturnExceptionWhenUserByEmailNotFound(){
+        long notExistingId = 1000;
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> { userServiceImpl.findUser(notExistingId);});
+
+        verify(userRepository).findById(notExistingId);
     }
 }

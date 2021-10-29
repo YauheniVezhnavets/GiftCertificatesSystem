@@ -16,9 +16,17 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.5.4'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.4'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.4'
- //   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.5.4'
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.5.4'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.4'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
     implementation project(':service')
     implementation project(':repository')
 }

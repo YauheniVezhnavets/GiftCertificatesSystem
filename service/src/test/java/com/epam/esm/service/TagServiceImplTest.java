@@ -1,28 +1,34 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.TagDao;
-import com.epam.esm.dao.UserDao;
-import com.epam.esm.entities.Tag;
-import com.epam.esm.entities.User;
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.exception.ResourceDuplicateException;
 import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.mapper.TagDtoMapper;
+import com.epam.esm.repository.TagRepository;
+import com.epam.esm.repository.UserRepository;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.User;
 import com.epam.esm.service.impl.TagServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
+
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.jupiter.api.TestInstance;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TagServiceImplTest {
@@ -33,11 +39,19 @@ public class TagServiceImplTest {
     private static Optional<User> optionalUser;
 
 
-    @Mock
-    private TagDao tagDao;
+    private static Tag tag = new Tag(7L, "Run", true);
+    private static TagDto tagDto = new TagDto(7L, "Run", true);
+    private static TagDto mostUsefulTagDto = new TagDto(1L, "Relax", true);
+    private static Tag mostUsefulTag = new Tag(1L, "Relax", true);
 
     @Mock
-    private UserDao userDao;
+    private TagRepository tagRepository;
+
+    @Mock
+    private TagDtoMapper tagDtoMapper;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private TagServiceImpl tagServiceImpl;
@@ -51,70 +65,112 @@ public class TagServiceImplTest {
         optionalUser = Optional.of(testUser);
     }
 
+
     @Test
     public void methodShouldCreateTagTest() {
-        long expected = 7L;
-        Tag tag = new Tag("Run");
-        when(tagDao.findByName(anyString())).thenReturn(Optional.empty());
-        when(tagDao.create(tag)).thenReturn(expected);
 
-        tagServiceImpl.createTag(tag);
+        when(tagDtoMapper.map(tagDto)).thenReturn(tag);
+        when(tagRepository.findByName(anyString())).thenReturn(Optional.empty());
+        when(tagRepository.save(tag)).thenReturn(any());
 
-        verify(tagDao, times(1)).findByName(any());
-        verify(tagDao, times(1)).create(any());
+        tagServiceImpl.createTag(tagDto);
+
+        verify(tagRepository, times(1)).save(any());
     }
 
-
     @Test
-    public void methodShouldReturnListOfTags() {
+    public void methodShouldReturnActiveTags() {
 
-        when(tagDao.findAll(1)).thenReturn(new ArrayList<>());
+        Pageable pageAndResultPerPage = PageRequest.of(0, 1);
+        when(tagRepository.findAll(pageAndResultPerPage)).thenReturn(new PageImpl<>(List.of(tag)));
+        when(tagDtoMapper.mapToDto(tag)).thenReturn(tagDto);
 
-        List<Tag> tags = tagServiceImpl.findTags(1);
+        Page<TagDto> tags = tagServiceImpl.findTags(0, 1);
 
         assertNotNull(tags);
     }
 
     @Test
-    public void methodShouldReturnTag(){
+    public void methodShouldReturnTag() {
 
-        when(tagDao.findById(anyLong())).thenReturn(optionalTag);
+        when(tagRepository.findById(anyLong())).thenReturn(Optional.of(tag));
+        when(tagDtoMapper.mapToDto(tag)).thenReturn(tagDto);
 
-        Tag tag = tagServiceImpl.findTag(1L);
+        TagDto actualTag = tagServiceImpl.findTag(1L);
 
-        assertNotNull(tag);
+        assertEquals(tagDto, actualTag);
     }
 
     @Test
     public void methodShouldDeleteTag() throws ResourceNotFoundException {
 
-        doNothing().when(tagDao).delete(optionalTag.get());
+        when(tagRepository.findById(anyLong())).thenReturn(Optional.of(tag));
 
-        tagServiceImpl.deleteTag(1L);
-
-        verify(tagDao, times(1)).delete(optionalTag.get());
+        tagServiceImpl.deleteTag(7L);
 
     }
 
     @Test
-    public void methodShouldFindMostUsedTagOfUserWithHighestCostOfAllOrders(){
-        when(userDao.findById(anyLong())).thenReturn(optionalUser);
-        when(tagDao.findMostUsedTagOfUserWithHighestCostOfAllOrders(anyLong())).thenReturn(Optional.of(testTag));
+    public void methodShouldFindMostUsedTagOfUserWithHighestCostOfAllOrders() {
 
-      Tag actual = tagServiceImpl.findMostUsedTagOfUserWithHighestCostOfAllOrders(1L);
+        when(tagDtoMapper.mapToDto(mostUsefulTag)).thenReturn(mostUsefulTagDto);
+        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
+        when(tagRepository.findMostUsedTagOfUserWithHighestCostOfAllOrders(anyLong()))
+                .thenReturn(Optional.of(mostUsefulTag));
 
-       assertEquals(actual,testTag);
+        TagDto actual = tagServiceImpl.findMostUsedTagOfUserWithHighestCostOfAllOrders(1L);
 
+        assertEquals(mostUsefulTagDto, actual);
+    }
+
+    @Test
+    public void methodShouldThrowExceptionWhenTagIsEmpty() {
+
+        when(tagDtoMapper.mapToDto(mostUsefulTag)).thenReturn(mostUsefulTagDto);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+
+            tagServiceImpl.findMostUsedTagOfUserWithHighestCostOfAllOrders(1L);
+
+        });
     }
 
 
+
     @Test
-    public void methodShouldReturnExceptionWhenIdNotFound()  {
-        when(tagDao.findById(0L)).thenReturn(Optional.empty());
+    public void methodShouldReturnExceptionWhenIdNotFound() {
+        when(tagRepository.findById(0L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
 
             tagServiceImpl.findTag(0L);
+        });
+    }
+
+    @Test
+    public void methodShouldThrowExceptionWhenTagNotFoundInMethodDeleteTag() {
+
+        when(tagRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+
+            tagServiceImpl.deleteTag(1L);
+
+        });
+    }
+
+    @Test
+    public void methodShouldThrowResourceDuplicateExceptionWhenTagExist() {
+
+        when(tagDtoMapper.map(tagDto)).thenReturn(tag);
+        when(tagRepository.findByName(anyString())).thenReturn(Optional.of(tag));
+        when(tagRepository.save(tag)).thenReturn(any());
+
+        assertThrows(ResourceDuplicateException.class, () -> {
+
+            tagServiceImpl.createTag(tagDto);
+
         });
     }
 }

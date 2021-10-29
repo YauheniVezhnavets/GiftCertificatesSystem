@@ -6,12 +6,14 @@ CREATE TABLE if not exists gift_certificate (
 	duration int              NOT NULL,
 	create_date       timestamp   NOT NULL,
 	last_update_date  timestamp   NOT NULL,
+	is_active boolean          DEFAULT 'TRUE' NOT NULL,
 	PRIMARY KEY (id)
 );
 
 CREATE TABLE if not exists tag (
 	id bigserial,
 	name VARCHAR(100)          NOT NULL ,
+	is_active boolean          DEFAULT 'TRUE' NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -30,7 +32,7 @@ CREATE TABLE if not exists users (
 	first_name VARCHAR(50)     NOT NULL ,
 	last_name  VARCHAR(50)     NOT NULL ,
 	email VARCHAR(50)          NOT NULL ,
-	password VARCHAR(50)       NOT NULL ,
+	password VARCHAR(100)       NOT NULL ,
 	PRIMARY KEY (id)
 );
 

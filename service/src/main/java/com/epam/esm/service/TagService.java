@@ -1,9 +1,11 @@
 package com.epam.esm.service;
 
-import com.epam.esm.entities.Tag;
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.InvalidFieldException;
 import com.epam.esm.exception.ResourceDuplicateException;
 import com.epam.esm.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,18 +23,18 @@ public interface TagService <T extends Tag> {
     /**
      * This method return all existing tags.
      *
-     * @return list of{@link Tag}
+     * @return list of{@link TagDto}
      */
-    List<Tag> findTags(int currentPage);
+    Page<TagDto> findTags(int currentPage, int pageSize);
 
 
     /**
      * This method return tag by his id.
      *
-     * @return {@link Tag}
+     * @return {@link TagDto}
      * @throws  {@link ResourceNotFoundException} in case if tag not found with searched id.
      */
-    Tag findTag(long tagId) throws ResourceNotFoundException;
+    TagDto findTag(long tagId) throws ResourceNotFoundException;
 
 
     /**
@@ -41,7 +43,7 @@ public interface TagService <T extends Tag> {
      * @throws {@link InvalidFieldException} in case if tag's name is not correct.
      * @throws {@link ResourceDuplicateException} in case if this tag's name already exist.
      */
-    void createTag(Tag tag) throws InvalidFieldException, ResourceDuplicateException;
+    void createTag(TagDto tagDto) throws InvalidFieldException, ResourceDuplicateException;
 
 
 
@@ -58,5 +60,5 @@ public interface TagService <T extends Tag> {
      *
      * @throws {@link ResourceNotFoundException} in case if this tag's id not found.
      */
-    Tag findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) throws ResourceNotFoundException;
+    TagDto findMostUsedTagOfUserWithHighestCostOfAllOrders(long userId) throws ResourceNotFoundException;
 }
