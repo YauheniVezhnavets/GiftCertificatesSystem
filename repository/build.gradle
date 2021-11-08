@@ -2,15 +2,6 @@ plugins {
     id 'java'
 }
 
-sourceSets {
-    generated {
-        java {
-            srcDirs = ['build/generated/sources/annotationProcessor/java/main']
-        }
-    }
-}
-
-
 group 'com.epam.esm'
 version '1.0'
 
@@ -36,6 +27,8 @@ dependencies {
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
     implementation 'com.querydsl:querydsl-jpa:5.0.0'
+    implementation 'com.querydsl:querydsl-apt:5.0.0'
+    implementation 'com.querydsl:querydsl-core:5.0.0'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.springframework.boot:spring-boot-starter-data-jpa:2.5.4'
     annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jpa'
@@ -45,3 +38,6 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+
+
