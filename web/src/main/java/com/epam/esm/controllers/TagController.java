@@ -33,7 +33,7 @@ import java.util.List;
  * @author Yauheni Vezhnavets
  **/
 @RestController
-@RequestMapping("api/v1/tags")
+@RequestMapping("GiftCertificateSystem/api/v1/tags")
 public class TagController {
 
     private static final String JSON = "application/json";
