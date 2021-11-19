@@ -9,15 +9,6 @@ group 'com.epam.esm'
 version '1.0'
 
 
-//sonarqube{
-//    properties{
-//        property "sonar.projectName", "GiftCertificateSystem-project"
-//        property "sonar.projectKey", "GiftCertificateSystem-project1"
-//        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-//
-//    }
-//}
-
 repositories {
     mavenCentral()
 }
@@ -53,5 +44,11 @@ dependencies {
 test {
     useJUnitPlatform()
 
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
 }
 
