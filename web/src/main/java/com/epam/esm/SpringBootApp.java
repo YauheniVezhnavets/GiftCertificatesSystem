@@ -11,7 +11,9 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 @SpringBootApplication
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 @ComponentScan("com.epam.esm")
-public class SpringBootApp extends SpringBootServletInitializer {
+public class SpringBootApp
+        extends SpringBootServletInitializer
+{
 
 
     public static void main(String[] args) {
