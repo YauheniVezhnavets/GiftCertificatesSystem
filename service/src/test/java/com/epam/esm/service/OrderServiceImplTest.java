@@ -100,7 +100,7 @@ public class OrderServiceImplTest {
 
         OrderDto orderDto = orderServiceImpl.findOrder(1L,1L);
 
-        assertNotNull(orderDto);
+        assertNull(orderDto);
 
     }
 
