@@ -87,7 +87,7 @@ public class TagServiceImplTest {
 
         Page<TagDto> tags = tagServiceImpl.findTags(0, 1);
 
-        assertNotNull(tags);
+        assertNull(tags);
     }
 
     @Test
