@@ -1,6 +1,5 @@
 plugins {
     id 'application'
-  //  id 'org.springframework.boot' version '2.5.4'
     id 'war'
 }
 

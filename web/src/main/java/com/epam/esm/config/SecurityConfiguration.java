@@ -31,13 +31,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/GiftCertificateSystem-1.0/").permitAll()
+                .antMatchers("/","/index","/.css").permitAll()
+                .antMatchers("/login").permitAll()
+                .antMatchers("/GiftCertificateSystem-1.0/","/index.jsp","/.css").permitAll()
                 .antMatchers("/auth/login").permitAll()
                 .antMatchers("/auth/register").permitAll()
                 .antMatchers("/api/v1/**").permitAll()
                 .anyRequest()
                 .authenticated()
+                .and()
+                .oauth2Login()
                 .and()
                 .apply(jwtConfigure);
     }

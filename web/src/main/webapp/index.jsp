@@ -1,4 +1,4 @@
-
+<!DOCTYPE HTML>
 <html>
 <body>
 <h2>Hello to GiftCertificate system!</h2>
